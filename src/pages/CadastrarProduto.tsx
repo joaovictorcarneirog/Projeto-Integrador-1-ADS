@@ -263,22 +263,48 @@ const CadastrarProduto = () => {
                 <div>
                   <Label htmlFor="imagem">Imagem do Produto</Label>
                   <div className="mt-2">
-                    <Input
-                      id="imagem"
-                      type="file"
-                      accept="image/*"
-                      onChange={handleImageChange}
-                    />
+                    {previewUrl ? (
+                      <div className="relative">
+                        <img
+                          src={previewUrl}
+                          alt="Preview"
+                          className="w-full max-w-md rounded-lg border-2 border-primary"
+                        />
+                        <Button
+                          type="button"
+                          variant="destructive"
+                          size="sm"
+                          className="absolute top-2 right-2"
+                          onClick={() => {
+                            setImagem(null);
+                            setPreviewUrl("");
+                          }}
+                        >
+                          Remover
+                        </Button>
+                      </div>
+                    ) : (
+                      <label
+                        htmlFor="imagem"
+                        className="flex flex-col items-center justify-center w-full h-48 border-2 border-dashed border-muted-foreground/25 rounded-lg cursor-pointer bg-muted/10 hover:bg-muted/20 transition-colors"
+                      >
+                        <div className="flex flex-col items-center justify-center pt-5 pb-6">
+                          <Upload className="h-12 w-12 text-muted-foreground mb-3" />
+                          <p className="mb-2 text-sm text-muted-foreground">
+                            <span className="font-semibold">Clique para fazer upload</span>
+                          </p>
+                          <p className="text-xs text-muted-foreground">PNG, JPG ou WEBP</p>
+                        </div>
+                        <Input
+                          id="imagem"
+                          type="file"
+                          accept="image/*"
+                          onChange={handleImageChange}
+                          className="hidden"
+                        />
+                      </label>
+                    )}
                   </div>
-                  {previewUrl && (
-                    <div className="mt-4">
-                      <img
-                        src={previewUrl}
-                        alt="Preview"
-                        className="w-full max-w-xs rounded-lg border"
-                      />
-                    </div>
-                  )}
                 </div>
 
                 {/* Botões */}
