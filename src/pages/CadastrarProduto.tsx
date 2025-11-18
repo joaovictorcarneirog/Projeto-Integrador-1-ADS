@@ -121,6 +121,15 @@ const CadastrarProduto = () => {
     setLoading(true);
 
     try {
+      // Verificar sessão atual antes de inserir
+      const { data: { session } } = await supabase.auth.getSession();
+      
+      if (!session?.user) {
+        throw new Error("Sessão expirada. Faça login novamente.");
+      }
+
+      console.log("User ID:", session.user.id);
+
       let imagemUrl = null;
 
       // Se usou URL direta
@@ -130,7 +139,7 @@ const CadastrarProduto = () => {
       // Se fez upload de arquivo
       else if (imagem) {
         const fileExt = imagem.name.split('.').pop();
-        const fileName = `${userId}-${Date.now()}.${fileExt}`;
+        const fileName = `${session.user.id}-${Date.now()}.${fileExt}`;
         const filePath = `produtos/${fileName}`;
 
         const { error: uploadError } = await supabase.storage
@@ -148,19 +157,29 @@ const CadastrarProduto = () => {
       }
 
       // Inserir produto no banco
-      const { error } = await supabase
-        .from("produto")
-        .insert({
-          nome: formData.nome,
-          descricao: formData.descricao,
-          preco: parseFloat(formData.preco),
-          data_vencimento: formData.data_vencimento,
-          quantidade: parseInt(formData.quantidade),
-          imagem: imagemUrl,
-          fk_vendedor_id: userId,
-        });
+      const produtoData = {
+        nome: formData.nome,
+        descricao: formData.descricao || null,
+        preco: parseFloat(formData.preco),
+        data_vencimento: formData.data_vencimento,
+        quantidade: parseInt(formData.quantidade),
+        imagem: imagemUrl,
+        fk_vendedor_id: session.user.id,
+      };
 
-      if (error) throw error;
+      console.log("Inserindo produto:", produtoData);
+
+      const { data, error } = await supabase
+        .from("produto")
+        .insert(produtoData)
+        .select();
+
+      if (error) {
+        console.error("Erro RLS:", error);
+        throw error;
+      }
+
+      console.log("Produto inserido:", data);
 
       toast({
         title: "Sucesso!",
@@ -172,7 +191,7 @@ const CadastrarProduto = () => {
       console.error("Erro ao cadastrar produto:", error);
       toast({
         title: "Erro",
-        description: error.message || "Erro ao cadastrar produto.",
+        description: error.message || "Erro ao cadastrar produto. Verifique se você é um vendedor.",
         variant: "destructive",
       });
     } finally {
