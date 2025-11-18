@@ -7,6 +7,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { ArrowLeft, Store } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import { cadastroPJSchema } from "@/lib/validation";
 
 const CadastroPJ = () => {
   const [formData, setFormData] = useState({
@@ -31,28 +32,14 @@ const CadastroPJ = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!formData.cpf && !formData.cnpj) {
+    // Validar com Zod
+    const validacao = cadastroPJSchema.safeParse(formData);
+    
+    if (!validacao.success) {
+      const primeiroErro = validacao.error.issues[0];
       toast({
-        title: "Erro",
-        description: "Preencha CPF ou CNPJ para continuar.",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    if (formData.senha !== formData.confirmarSenha) {
-      toast({
-        title: "Erro",
-        description: "As senhas não coincidem.",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    if (formData.senha.length < 8) {
-      toast({
-        title: "Erro",
-        description: "A senha deve ter no mínimo 8 caracteres.",
+        title: "Erro de Validação",
+        description: primeiroErro.message,
         variant: "destructive",
       });
       return;
