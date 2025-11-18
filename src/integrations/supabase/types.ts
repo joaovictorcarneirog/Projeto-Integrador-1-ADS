@@ -258,27 +258,45 @@ export type Database = {
       }
       profiles: {
         Row: {
+          celular: string | null
+          cnpj: number | null
           cpf: number | null
           created_at: string | null
           data_nasc: string | null
+          endereco: string | null
+          horario_funcionamento: string | null
           id: string
+          imagem_perfil: string | null
           nome: string
+          preferencias_alimentares: string | null
           tipo_usuario: string
         }
         Insert: {
+          celular?: string | null
+          cnpj?: number | null
           cpf?: number | null
           created_at?: string | null
           data_nasc?: string | null
+          endereco?: string | null
+          horario_funcionamento?: string | null
           id: string
+          imagem_perfil?: string | null
           nome: string
+          preferencias_alimentares?: string | null
           tipo_usuario: string
         }
         Update: {
+          celular?: string | null
+          cnpj?: number | null
           cpf?: number | null
           created_at?: string | null
           data_nasc?: string | null
+          endereco?: string | null
+          horario_funcionamento?: string | null
           id?: string
+          imagem_perfil?: string | null
           nome?: string
+          preferencias_alimentares?: string | null
           tipo_usuario?: string
         }
         Relationships: []
