@@ -10,6 +10,7 @@ import CadastroPF from "./pages/CadastroPF";
 import CadastroPJ from "./pages/CadastroPJ";
 import QuemSomos from "./pages/QuemSomos";
 import Contato from "./pages/Contato";
+import CadastrarProduto from "./pages/CadastrarProduto";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -28,6 +29,7 @@ const App = () => (
           <Route path="/cadastro-pj" element={<CadastroPJ />} />
           <Route path="/quem-somos" element={<QuemSomos />} />
           <Route path="/contato" element={<Contato />} />
+          <Route path="/cadastrar-produto" element={<CadastrarProduto />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
