@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import { SeedDataBanner } from "@/components/SeedDataBanner";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
@@ -9,8 +8,6 @@ import { Heart, ShoppingCart, Plus } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { byteaToString } from "@/lib/supabase-utils";
-import { getProductImageUrl } from "@/lib/product-images";
 
 interface Product {
   id: number;
@@ -62,17 +59,13 @@ const Index = () => {
 
       if (error) throw error;
 
-      const productsWithImageConverted = data?.map((p: any) => {
-        const imagemConvertida = byteaToString(p.imagem);
-        
-        return {
-          ...p,
-          imagem: imagemConvertida,
-          vendedor_nome: p.profiles?.nome || "Vendedor Desconhecido",
-        };
-      }) || [];
+      const productsWithImage = data?.map((p: any) => ({
+        ...p,
+        imagem: p.imagem, // Usar URL direta do Storage ou imagem carregada
+        vendedor_nome: p.profiles?.nome || "Vendedor Desconhecido",
+      })) || [];
 
-      setProducts(productsWithImageConverted);
+      setProducts(productsWithImage);
     } catch (error) {
       console.error("Erro ao buscar produtos:", error);
       toast({
@@ -187,7 +180,6 @@ const Index = () => {
   return (
     <div className="min-h-screen flex flex-col bg-background">
       <Navbar />
-      <SeedDataBanner />
 
       {/* Hero Carousel */}
       <section className="bg-secondary">
@@ -247,14 +239,11 @@ const Index = () => {
           <div className={isVendedor ? "md:col-span-8" : "md:col-span-12"}>
             <h3 className="text-2xl font-bold mb-6 text-center">Produtos Disponíveis</h3>
             <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-              {products.map((product) => {
-                const imageUrl = getProductImageUrl(product.imagem);
-                
-                return (
+              {products.map((product) => (
                 <Card key={product.id} className="overflow-hidden hover:shadow-lg transition-shadow">
                   <div className="aspect-video relative">
                     <img
-                      src={imageUrl}
+                      src={product.imagem || "https://images.unsplash.com/photo-1506617564039-2f3b650b7b66?w=400"}
                       alt={product.nome}
                       className="w-full h-full object-cover"
                     />
@@ -304,8 +293,7 @@ const Index = () => {
                     </div>
                   </CardContent>
                 </Card>
-              );
-              })}
+              ))}
             </div>
 
             {products.length === 0 && (
