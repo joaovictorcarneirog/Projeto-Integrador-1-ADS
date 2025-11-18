@@ -62,14 +62,8 @@ const Index = () => {
 
       if (error) throw error;
 
-      console.log("Produtos recebidos do banco:", data);
-
       const productsWithImageConverted = data?.map((p: any) => {
         const imagemConvertida = byteaToString(p.imagem);
-        console.log(`Produto: ${p.nome}`);
-        console.log(`  - Imagem raw:`, p.imagem);
-        console.log(`  - Imagem convertida:`, imagemConvertida);
-        console.log(`  - Profiles:`, p.profiles);
         
         return {
           ...p,
@@ -78,7 +72,6 @@ const Index = () => {
         };
       }) || [];
 
-      console.log("Produtos processados:", productsWithImageConverted);
       setProducts(productsWithImageConverted);
     } catch (error) {
       console.error("Erro ao buscar produtos:", error);
