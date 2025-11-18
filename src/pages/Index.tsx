@@ -20,6 +20,7 @@ interface Product {
   data_vencimento: string;
   quantidade: number;
   imagem: string | null;
+  vendedor_nome?: string;
 }
 
 const Index = () => {
@@ -53,7 +54,10 @@ const Index = () => {
     try {
       const { data, error } = await supabase
         .from("produto")
-        .select("*")
+        .select(`
+          *,
+          profiles:fk_vendedor_id(nome)
+        `)
         .order("created_at", { ascending: false });
 
       if (error) throw error;
@@ -61,6 +65,7 @@ const Index = () => {
       const productsWithImageConverted = data?.map((p: any) => ({
         ...p,
         imagem: byteaToString(p.imagem),
+        vendedor_nome: p.profiles?.nome || "Vendedor",
       })) || [];
 
       setProducts(productsWithImageConverted);
@@ -251,7 +256,12 @@ const Index = () => {
                     />
                   </div>
                   <CardContent className="p-4">
-                    <h4 className="font-semibold text-lg mb-2">{product.nome}</h4>
+                    <div className="flex items-start justify-between gap-2 mb-2">
+                      <h4 className="font-semibold text-lg flex-1">{product.nome}</h4>
+                    </div>
+                    <p className="text-xs text-muted-foreground mb-2 flex items-center gap-1">
+                      <span className="font-medium">Por:</span> {product.vendedor_nome}
+                    </p>
                     <p className="text-2xl font-bold text-primary mb-2">
                       {product.preco === "0.00" || product.preco === "0" ? "Grátis" : `R$ ${product.preco}`}
                     </p>
