@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import { SeedDataBanner } from "@/components/SeedDataBanner";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
@@ -181,6 +182,7 @@ const Index = () => {
   return (
     <div className="min-h-screen flex flex-col bg-background">
       <Navbar />
+      <SeedDataBanner />
 
       {/* Hero Carousel */}
       <section className="bg-secondary">

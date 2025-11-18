@@ -14,6 +14,7 @@ const CadastroPJ = () => {
     email: "",
     senha: "",
     confirmarSenha: "",
+    cpf: "",
     cnpj: "",
     celular: "",
     endereco: "",
@@ -29,6 +30,15 @@ const CadastroPJ = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (!formData.cpf && !formData.cnpj) {
+      toast({
+        title: "Erro",
+        description: "Preencha CPF ou CNPJ para continuar.",
+        variant: "destructive",
+      });
+      return;
+    }
 
     if (formData.senha !== formData.confirmarSenha) {
       toast({
@@ -58,7 +68,8 @@ const CadastroPJ = () => {
           data: {
             nome: formData.nomeEmpresa,
             tipo_usuario: "vendedor",
-            cnpj: formData.cnpj,
+            cpf: formData.cpf || undefined,
+            cnpj: formData.cnpj || undefined,
             celular: formData.celular,
             endereco: formData.endereco,
             horario_funcionamento: formData.horario_funcionamento,
@@ -95,7 +106,7 @@ const CadastroPJ = () => {
             <div className="bg-primary text-primary-foreground p-8 flex flex-col justify-center items-center text-center">
               <Store className="h-20 w-20 mb-4" />
               <h2 className="text-3xl font-bold mb-4">Seja um Vendedor!</h2>
-              <p className="mb-6">Cadastre sua empresa e comece a vender produtos com desconto.</p>
+              <p className="mb-6">Cadastre-se e comece a vender produtos evitando o desperdício.</p>
               <Link to="/login">
                 <Button variant="secondary" className="w-full">
                   Já tenho conta
@@ -111,13 +122,13 @@ const CadastroPJ = () => {
                     <ArrowLeft className="h-5 w-5" />
                   </Button>
                 </Link>
-                <h2 className="text-2xl font-bold mt-4">Cadastro Pessoa Jurídica</h2>
-                <p className="text-muted-foreground">Preencha os dados da sua empresa</p>
+                <h2 className="text-2xl font-bold mt-4">Cadastro de Vendedor</h2>
+                <p className="text-muted-foreground">Preencha os dados para começar a vender</p>
               </div>
 
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div className="space-y-2">
-                  <Label htmlFor="nomeEmpresa">Nome da Empresa *</Label>
+                  <Label htmlFor="nomeEmpresa">Nome Completo ou Nome da Empresa *</Label>
                   <Input
                     id="nomeEmpresa"
                     name="nomeEmpresa"
@@ -127,18 +138,34 @@ const CadastroPJ = () => {
                   />
                 </div>
 
-                <div className="space-y-2">
-                  <Label htmlFor="cnpj">CNPJ (apenas números) *</Label>
-                  <Input
-                    id="cnpj"
-                    name="cnpj"
-                    value={formData.cnpj}
-                    onChange={handleChange}
-                    placeholder="00000000000000"
-                    maxLength={14}
-                    required
-                  />
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="cpf">CPF (apenas números)</Label>
+                    <Input
+                      id="cpf"
+                      name="cpf"
+                      value={formData.cpf}
+                      onChange={handleChange}
+                      placeholder="00000000000"
+                      maxLength={11}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="cnpj">CNPJ (apenas números)</Label>
+                    <Input
+                      id="cnpj"
+                      name="cnpj"
+                      value={formData.cnpj}
+                      onChange={handleChange}
+                      placeholder="00000000000000"
+                      maxLength={14}
+                    />
+                  </div>
                 </div>
+
+                <p className="text-sm text-muted-foreground -mt-2">
+                  * Preencha CPF ou CNPJ (pelo menos um é obrigatório)
+                </p>
 
                 <div className="space-y-2">
                   <Label htmlFor="email">E-mail *</Label>
