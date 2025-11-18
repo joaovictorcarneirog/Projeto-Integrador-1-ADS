@@ -1,9 +1,8 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { Database, Loader2, X } from "lucide-react";
+import { Database, Loader2 } from "lucide-react";
 
 export const SeedDataBanner = () => {
   const [showBanner, setShowBanner] = useState(false);
@@ -15,14 +14,13 @@ export const SeedDataBanner = () => {
   }, []);
 
   const checkIfNeedsSeeding = async () => {
-    const dismissed = localStorage.getItem("seed-banner-dismissed");
-    if (dismissed) return;
-
-    const { data } = await supabase
+    // Verificar se há produtos no banco
+    const { data, count } = await supabase
       .from("produto")
       .select("id", { count: "exact", head: true });
 
-    if (!data || data.length === 0) {
+    // Mostrar banner se não houver produtos (ignorar localStorage em produção)
+    if (!count || count === 0) {
       setShowBanner(true);
     }
   };
@@ -38,79 +36,77 @@ export const SeedDataBanner = () => {
 
       toast({
         title: "Sucesso!",
-        description: "Dados de exemplo criados! Recarregue a página para ver os produtos.",
+        description: "Dados de exemplo criados! Recarregando página...",
       });
 
       setShowBanner(false);
-      localStorage.setItem("seed-banner-dismissed", "true");
       
-      // Recarregar a página após 2 segundos
-      setTimeout(() => window.location.reload(), 2000);
+      // Recarregar a página após 1 segundo
+      setTimeout(() => window.location.reload(), 1000);
     } catch (error: any) {
       toast({
         title: "Erro",
-        description: error.message || "Erro ao popular dados.",
+        description: error.message || "Erro ao popular dados. Tente novamente.",
         variant: "destructive",
       });
-    } finally {
       setLoading(false);
     }
-  };
-
-  const handleDismiss = () => {
-    setShowBanner(false);
-    localStorage.setItem("seed-banner-dismissed", "true");
   };
 
   if (!showBanner) return null;
 
   return (
-    <div className="fixed top-20 left-1/2 -translate-x-1/2 z-50 w-full max-w-2xl px-4">
-      <Alert className="bg-primary/10 border-primary/20">
-        <Database className="h-4 w-4 text-primary" />
-        <AlertTitle className="flex items-center justify-between">
-          <span>Banco de dados vazio</span>
-          <Button
-            variant="ghost"
-            size="icon"
-            className="h-6 w-6"
-            onClick={handleDismiss}
-          >
-            <X className="h-4 w-4" />
-          </Button>
-        </AlertTitle>
-        <AlertDescription className="space-y-3">
-          <p className="text-sm">
-            Parece que não há produtos cadastrados. Deseja popular o banco com dados de exemplo?
-          </p>
-          <div className="flex gap-2">
-            <Button
-              onClick={handleSeedData}
-              disabled={loading}
-              size="sm"
-            >
-              {loading ? (
-                <>
-                  <Loader2 className="mr-2 h-3 w-3 animate-spin" />
-                  Populando...
-                </>
-              ) : (
-                <>
-                  <Database className="mr-2 h-3 w-3" />
-                  Popular Dados
-                </>
-              )}
-            </Button>
-            <Button
-              variant="outline"
-              onClick={handleDismiss}
-              size="sm"
-            >
-              Não, obrigado
-            </Button>
+    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+      <div className="bg-background border-2 border-primary rounded-lg shadow-2xl max-w-md w-full p-6 space-y-4">
+        <div className="flex items-center gap-3">
+          <div className="p-3 bg-primary/10 rounded-full">
+            <Database className="h-6 w-6 text-primary" />
           </div>
-        </AlertDescription>
-      </Alert>
+          <div>
+            <h2 className="text-xl font-bold">Bem-vindo ao Xepa Social!</h2>
+            <p className="text-sm text-muted-foreground">Configure seu site em um clique</p>
+          </div>
+        </div>
+        
+        <div className="space-y-2">
+          <p className="text-sm">
+            Para começar a usar o site, precisamos popular o banco de dados com produtos de exemplo das padarias de Brasília.
+          </p>
+          <p className="text-sm font-medium text-primary">
+            Isso inclui:
+          </p>
+          <ul className="text-sm space-y-1 ml-4">
+            <li>✓ 3 padarias famosas de Brasília</li>
+            <li>✓ 7 produtos variados com imagens</li>
+            <li>✓ Usuários de exemplo prontos para teste</li>
+          </ul>
+        </div>
+
+        <div className="flex gap-2 pt-2">
+          <Button
+            onClick={handleSeedData}
+            disabled={loading}
+            className="flex-1"
+            size="lg"
+          >
+            {loading ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                Criando dados...
+              </>
+            ) : (
+              <>
+                <Database className="mr-2 h-4 w-4" />
+                Criar Dados de Exemplo
+              </>
+            )}
+          </Button>
+        </div>
+        
+        <p className="text-xs text-center text-muted-foreground">
+          Você poderá adicionar seus próprios produtos depois
+        </p>
+      </div>
     </div>
   );
 };
