@@ -61,6 +61,10 @@ const CadastroPJ = () => {
     setLoading(true);
 
     try {
+      // Remover formatação do CPF e CNPJ (deixar apenas números)
+      const cpfLimpo = formData.cpf ? formData.cpf.replace(/\D/g, '') : undefined;
+      const cnpjLimpo = formData.cnpj ? formData.cnpj.replace(/\D/g, '') : undefined;
+      
       const { data, error } = await supabase.auth.signUp({
         email: formData.email,
         password: formData.senha,
@@ -68,8 +72,8 @@ const CadastroPJ = () => {
           data: {
             nome: formData.nomeEmpresa,
             tipo_usuario: "vendedor",
-            cpf: formData.cpf || undefined,
-            cnpj: formData.cnpj || undefined,
+            cpf: cpfLimpo,
+            cnpj: cnpjLimpo,
             celular: formData.celular,
             endereco: formData.endereco,
             horario_funcionamento: formData.horario_funcionamento,

@@ -53,6 +53,9 @@ const CadastroPF = () => {
     setLoading(true);
 
     try {
+      // Remover formatação do CPF (deixar apenas números)
+      const cpfLimpo = formData.cpf.replace(/\D/g, '');
+      
       const { data, error } = await supabase.auth.signUp({
         email: formData.email,
         password: formData.senha,
@@ -61,7 +64,7 @@ const CadastroPF = () => {
             nome: formData.nome,
             tipo_usuario: "comprador",
             data_nasc: formData.data_nasc,
-            cpf: formData.cpf,
+            cpf: cpfLimpo,
             celular: formData.celular,
             endereco: formData.endereco,
             preferencias_alimentares: formData.preferencias_alimentares,
