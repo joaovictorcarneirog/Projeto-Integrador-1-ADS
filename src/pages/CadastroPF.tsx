@@ -8,6 +8,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { ArrowLeft, Leaf } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import { cadastroPFSchema } from "@/lib/validation";
 
 const CadastroPF = () => {
   const [formData, setFormData] = useState({
@@ -32,19 +33,14 @@ const CadastroPF = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (formData.senha !== formData.confirmarSenha) {
+    // Validar com Zod
+    const validacao = cadastroPFSchema.safeParse(formData);
+    
+    if (!validacao.success) {
+      const primeiroErro = validacao.error.issues[0];
       toast({
-        title: "Erro",
-        description: "As senhas não coincidem.",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    if (formData.senha.length < 8) {
-      toast({
-        title: "Erro",
-        description: "A senha deve ter no mínimo 8 caracteres.",
+        title: "Erro de Validação",
+        description: primeiroErro.message,
         variant: "destructive",
       });
       return;
