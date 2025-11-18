@@ -62,12 +62,20 @@ const Index = () => {
 
       if (error) throw error;
 
-      const productsWithImageConverted = data?.map((p: any) => ({
-        ...p,
-        imagem: byteaToString(p.imagem),
-        vendedor_nome: p.profiles?.nome || "Vendedor",
-      })) || [];
+      console.log("Produtos recebidos:", data);
 
+      const productsWithImageConverted = data?.map((p: any) => {
+        const imagemConvertida = byteaToString(p.imagem);
+        console.log(`Produto: ${p.nome}, Imagem: ${imagemConvertida}, Vendedor:`, p.profiles);
+        
+        return {
+          ...p,
+          imagem: imagemConvertida,
+          vendedor_nome: p.profiles?.nome || "Vendedor Desconhecido",
+        };
+      }) || [];
+
+      console.log("Produtos processados:", productsWithImageConverted);
       setProducts(productsWithImageConverted);
     } catch (error) {
       console.error("Erro ao buscar produtos:", error);
