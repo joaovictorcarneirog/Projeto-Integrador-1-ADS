@@ -3,21 +3,51 @@ import { Heart, ShoppingCart, User, Menu } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { useState, useEffect } from "react";
+import { supabase } from "@/integrations/supabase/client";
 
 const Navbar = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [userType, setUserType] = useState<string | null>(null);
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
-    const type = localStorage.getItem("userType");
-    setIsLoggedIn(!!token);
-    setUserType(type);
+    // Verificar sessão inicial
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setIsLoggedIn(!!session);
+      if (session) {
+        // Buscar tipo de usuário
+        supabase
+          .from("profiles")
+          .select("tipo_usuario")
+          .eq("id", session.user.id)
+          .single()
+          .then(({ data }) => {
+            setUserType(data?.tipo_usuario || null);
+          });
+      }
+    });
+
+    // Ouvir mudanças de autenticação
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      setIsLoggedIn(!!session);
+      if (session) {
+        supabase
+          .from("profiles")
+          .select("tipo_usuario")
+          .eq("id", session.user.id)
+          .single()
+          .then(({ data }) => {
+            setUserType(data?.tipo_usuario || null);
+          });
+      } else {
+        setUserType(null);
+      }
+    });
+
+    return () => subscription.unsubscribe();
   }, []);
 
-  const handleLogout = () => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("userType");
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
     setIsLoggedIn(false);
     setUserType(null);
     window.location.href = "/";

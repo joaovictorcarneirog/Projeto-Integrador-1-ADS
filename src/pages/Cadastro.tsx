@@ -7,6 +7,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { ArrowLeft, Leaf } from "lucide-react";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { signUpWithMetadata } from "@/lib/supabase-utils";
 
 const Cadastro = () => {
   const [formData, setFormData] = useState({
@@ -41,38 +42,29 @@ const Cadastro = () => {
     setLoading(true);
 
     try {
-      const response = await fetch("http://localhost:5000/cadastrarusuario", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
+      const { data, error } = await signUpWithMetadata(
+        formData.email,
+        formData.senha,
+        {
           nome: formData.nome,
-          email: formData.email,
-          senha: formData.senha,
-          tipo_usuario: formData.tipo_usuario,
+          tipo_usuario: formData.tipo_usuario as "comprador" | "vendedor",
           data_nasc: formData.data_nasc,
-          cpf: formData.cpf || null,
-        }),
+          cpf: formData.cpf || undefined,
+        }
+      );
+
+      if (error) throw error;
+
+      toast({
+        title: "Sucesso!",
+        description: "Conta criada! Você já pode fazer login.",
       });
-
-      const data = await response.json();
-
-      if (response.ok) {
-        toast({
-          title: "Sucesso!",
-          description: "Conta criada com sucesso! Faça login para continuar.",
-        });
-        navigate("/login");
-      } else {
-        toast({
-          title: "Erro",
-          description: data.message || "Erro ao criar conta.",
-          variant: "destructive",
-        });
-      }
-    } catch (error) {
+      
+      navigate("/login");
+    } catch (error: any) {
       toast({
         title: "Erro",
-        description: "Erro ao criar conta. Tente novamente.",
+        description: error.message || "Erro ao criar conta.",
         variant: "destructive",
       });
     } finally {

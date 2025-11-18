@@ -6,6 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { ArrowLeft, Leaf } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -19,33 +20,23 @@ const Login = () => {
     setLoading(true);
 
     try {
-      const response = await fetch("http://localhost:5000/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, senha: password }),
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
       });
 
-      const data = await response.json();
+      if (error) throw error;
 
-      if (response.ok) {
-        localStorage.setItem("token", data.token);
-        localStorage.setItem("userType", data.tipo_usuario);
-        toast({
-          title: "Sucesso!",
-          description: "Login realizado com sucesso.",
-        });
-        navigate("/");
-      } else {
-        toast({
-          title: "Erro",
-          description: data.message || "Credenciais inválidas.",
-          variant: "destructive",
-        });
-      }
-    } catch (error) {
+      toast({
+        title: "Sucesso!",
+        description: "Login realizado com sucesso.",
+      });
+      
+      navigate("/");
+    } catch (error: any) {
       toast({
         title: "Erro",
-        description: "Erro ao realizar login. Tente novamente.",
+        description: error.message || "Credenciais inválidas.",
         variant: "destructive",
       });
     } finally {

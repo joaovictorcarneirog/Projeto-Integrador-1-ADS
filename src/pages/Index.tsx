@@ -7,66 +7,104 @@ import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious
 import { Heart, ShoppingCart, Plus } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
+import { byteaToDataUrl } from "@/lib/supabase-utils";
 
 interface Product {
   id: number;
   nome: string;
   preco: string;
   descricao: string;
-  imagem_url: string;
   data_vencimento: string;
   quantidade: number;
-  telefone_vendedor: string;
+  imagem: any;
+  mime: string;
+  telefone_numero?: string;
 }
 
 const Index = () => {
   const [products, setProducts] = useState<Product[]>([]);
   const [isVendedor, setIsVendedor] = useState(false);
+  const [userId, setUserId] = useState<string | null>(null);
   const { toast } = useToast();
 
   useEffect(() => {
-    const userType = localStorage.getItem("userType");
-    setIsVendedor(userType === "vendedor");
-    
+    checkUser();
     fetchProducts();
   }, []);
 
-  const fetchProducts = async () => {
-    try {
-      const response = await fetch("http://localhost:5000/produtos");
-      if (response.ok) {
-        const data = await response.json();
-        setProducts(data);
-      }
-    } catch (error) {
-      console.error("Erro ao buscar produtos:", error);
+  const checkUser = async () => {
+    const { data: { session } } = await supabase.auth.getSession();
+    if (session?.user) {
+      setUserId(session.user.id);
+      
+      // Buscar perfil do usuário
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("tipo_usuario")
+        .eq("id", session.user.id)
+        .single();
+      
+      setIsVendedor(profile?.tipo_usuario === "vendedor");
     }
   };
 
-  const addToCart = async (productId: number) => {
-    const token = localStorage.getItem("token");
-    if (!token) {
+  const fetchProducts = async () => {
+    try {
+      const { data, error } = await supabase
+        .from("produto")
+        .select(`
+          *,
+          telefone:telefone!telefone_fk_vendedor_id_fkey(numero)
+        `)
+        .order("created_at", { ascending: false });
+
+      if (error) throw error;
+
+      const productsWithPhone = data?.map((p: any) => ({
+        ...p,
+        telefone_numero: p.telefone?.[0]?.numero || "",
+      })) || [];
+
+      setProducts(productsWithPhone);
+    } catch (error) {
+      console.error("Erro ao buscar produtos:", error);
+      toast({
+        title: "Erro",
+        description: "Não foi possível carregar os produtos.",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const addToCart = async (productId: number, preco: string) => {
+    if (!userId) {
       window.location.href = "/login";
       return;
     }
 
     try {
-      const response = await fetch(`http://localhost:5000/adicionar/carrinho/${productId}`, {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      if (response.ok) {
-        toast({
-          title: "Sucesso!",
-          description: "Produto adicionado ao carrinho.",
+      const valorTotal = parseFloat(preco);
+      
+      const { error } = await supabase
+        .from("carrinho_produto")
+        .upsert({
+          fk_produto_id: productId,
+          fk_cliente_id: userId,
+          quantidade: 1,
+          valor_total_item: valorTotal,
+        }, {
+          onConflict: "fk_produto_id,fk_cliente_id",
         });
-      } else if (response.status === 401) {
-        window.location.href = "/login";
-      }
+
+      if (error) throw error;
+
+      toast({
+        title: "Sucesso!",
+        description: "Produto adicionado ao carrinho.",
+      });
     } catch (error) {
+      console.error("Erro ao adicionar ao carrinho:", error);
       toast({
         title: "Erro",
         description: "Não foi possível adicionar ao carrinho.",
@@ -76,30 +114,57 @@ const Index = () => {
   };
 
   const addToFavorites = async (productId: number) => {
-    const token = localStorage.getItem("token");
-    if (!token) {
+    if (!userId) {
       window.location.href = "/login";
       return;
     }
 
     try {
-      const response = await fetch(`http://localhost:5000/adicionar/favoritos/${productId}`, {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-      });
+      // Primeiro, garantir que o usuário tem uma lista de favoritos
+      const { data: favList, error: favError } = await supabase
+        .from("favoritos")
+        .select("id")
+        .eq("fk_cliente_id", userId)
+        .maybeSingle();
 
-      if (response.ok) {
-        toast({
-          title: "Sucesso!",
-          description: "Produto adicionado aos favoritos.",
-        });
-      } else if (response.status === 401) {
-        window.location.href = "/login";
+      let favoritosId = favList?.id;
+
+      if (!favoritosId) {
+        const { data: newFav, error: createError } = await supabase
+          .from("favoritos")
+          .insert({ fk_cliente_id: userId })
+          .select("id")
+          .single();
+
+        if (createError) throw createError;
+        favoritosId = newFav.id;
       }
+
+      // Adicionar produto aos favoritos
+      const { error } = await supabase
+        .from("produto_favorito")
+        .insert({
+          fk_produto_id: productId,
+          fk_favoritos_id: favoritosId,
+        });
+
+      if (error) {
+        if (error.code === "23505") {
+          toast({
+            title: "Aviso",
+            description: "Produto já está nos favoritos.",
+          });
+          return;
+        }
+        throw error;
+      }
+
+      toast({
+        title: "Sucesso!",
+        description: "Produto adicionado aos favoritos.",
+      });
     } catch (error) {
+      console.error("Erro ao adicionar aos favoritos:", error);
       toast({
         title: "Erro",
         description: "Não foi possível adicionar aos favoritos.",
@@ -108,8 +173,8 @@ const Index = () => {
     }
   };
 
-  const handleWhatsApp = (phone: string, productName: string) => {
-    const cleanPhone = phone.replace(/\D/g, "");
+  const handleWhatsApp = (phone: string | number, productName: string) => {
+    const cleanPhone = String(phone).replace(/\D/g, "");
     const message = encodeURIComponent(`Olá! Tenho interesse no produto: ${productName}`);
     window.open(`https://wa.me/55${cleanPhone}?text=${message}`, "_blank");
   };
@@ -176,11 +241,16 @@ const Index = () => {
           <div className={isVendedor ? "md:col-span-8" : "md:col-span-12"}>
             <h3 className="text-2xl font-bold mb-6 text-center">Produtos Disponíveis</h3>
             <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-              {products.map((product) => (
+              {products.map((product) => {
+                const imageUrl = product.imagem 
+                  ? byteaToDataUrl(product.imagem, product.mime)
+                  : "https://images.unsplash.com/photo-1506617564039-2f3b650b7b66?w=400";
+                
+                return (
                 <Card key={product.id} className="overflow-hidden hover:shadow-lg transition-shadow">
                   <div className="aspect-video relative">
                     <img
-                      src={product.imagem_url || "https://via.placeholder.com/400x300?text=Sem+Imagem"}
+                      src={imageUrl}
                       alt={product.nome}
                       className="w-full h-full object-cover"
                     />
@@ -211,21 +281,23 @@ const Index = () => {
                       <Button
                         variant="outline"
                         size="icon"
-                        onClick={() => addToCart(product.id)}
+                        onClick={() => addToCart(product.id, product.preco)}
                         title="Adicionar ao carrinho"
                       >
                         <ShoppingCart className="h-4 w-4" />
                       </Button>
                       <Button
                         className="flex-1"
-                        onClick={() => handleWhatsApp(product.telefone_vendedor, product.nome)}
+                        onClick={() => handleWhatsApp(product.telefone_numero || "", product.nome)}
+                        disabled={!product.telefone_numero}
                       >
                         Falar com Vendedor
                       </Button>
                     </div>
                   </CardContent>
                 </Card>
-              ))}
+              );
+              })}
             </div>
 
             {products.length === 0 && (
