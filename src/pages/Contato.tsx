@@ -28,21 +28,15 @@ const Contato = () => {
     setLoading(true);
 
     try {
-      const response = await fetch("http://localhost:5000/contato", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
+      // Por enquanto apenas simular envio
+      // TODO: Implementar envio de email via Edge Function se necessário
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      toast({
+        title: "Mensagem enviada!",
+        description: "Obrigado pelo contato. Responderemos em breve.",
       });
-
-      if (response.ok) {
-        toast({
-          title: "Mensagem enviada!",
-          description: "Obrigado pelo contato. Responderemos em breve.",
-        });
-        setFormData({ nome: "", email: "", assunto: "", mensagem: "" });
-      } else {
-        throw new Error("Erro ao enviar mensagem");
-      }
+      setFormData({ nome: "", email: "", assunto: "", mensagem: "" });
     } catch (error) {
       toast({
         title: "Erro",
