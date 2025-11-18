@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -8,6 +10,7 @@ All colors MUST be HSL.
 
 @layer base {
   :root {
+    /* Xepa Social - Green Theme */
     --background: 0 0% 100%;
     --foreground: 140 60% 15%;
 
@@ -17,35 +20,29 @@ All colors MUST be HSL.
     --popover: 0 0% 100%;
     --popover-foreground: 140 60% 15%;
 
-    --primary: 142 76% 36%;
+    --primary: 142 71% 29%;
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 120 40% 96%;
+    --secondary: 142 35% 96%;
     --secondary-foreground: 140 60% 15%;
 
-    --muted: 120 30% 95%;
-    --muted-foreground: 140 20% 45%;
+    --muted: 142 20% 94%;
+    --muted-foreground: 140 15% 50%;
 
-    --accent: 86 60% 55%;
-    --accent-foreground: 140 60% 15%;
+    --accent: 142 71% 29%;
+    --accent-foreground: 0 0% 100%;
 
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 120 20% 88%;
-    --input: 120 20% 88%;
-    --ring: 142 76% 36%;
+    --border: 142 15% 88%;
+    --input: 142 15% 88%;
+    --ring: 142 71% 29%;
 
-    --success: 142 76% 36%;
+    --success: 142 71% 29%;
     --success-foreground: 0 0% 100%;
 
-    --gradient-primary: linear-gradient(135deg, hsl(142 76% 36%), hsl(86 60% 55%));
-    --gradient-hero: linear-gradient(180deg, hsl(120 40% 96%), hsl(0 0% 100%));
-
-    --shadow-card: 0 4px 20px -4px hsl(142 76% 36% / 0.1);
-    --shadow-elevated: 0 10px 40px -8px hsl(142 76% 36% / 0.2);
-
-    --radius: 0.75rem;
+    --radius: 0.5rem;
 
     --sidebar-background: 0 0% 98%;
 
@@ -65,42 +62,36 @@ All colors MUST be HSL.
   }
 
   .dark {
-    --background: 140 30% 8%;
-    --foreground: 120 30% 95%;
+    --background: 142 30% 10%;
+    --foreground: 142 20% 95%;
 
-    --card: 140 25% 12%;
-    --card-foreground: 120 30% 95%;
+    --card: 142 25% 14%;
+    --card-foreground: 142 20% 95%;
 
-    --popover: 140 25% 12%;
-    --popover-foreground: 120 30% 95%;
+    --popover: 142 25% 14%;
+    --popover-foreground: 142 20% 95%;
 
-    --primary: 142 76% 36%;
+    --primary: 142 71% 40%;
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 140 20% 18%;
-    --secondary-foreground: 120 30% 95%;
+    --secondary: 142 20% 20%;
+    --secondary-foreground: 142 20% 95%;
 
-    --muted: 140 20% 18%;
-    --muted-foreground: 120 15% 60%;
+    --muted: 142 20% 20%;
+    --muted-foreground: 142 15% 65%;
 
-    --accent: 86 60% 55%;
-    --accent-foreground: 140 60% 15%;
+    --accent: 142 71% 40%;
+    --accent-foreground: 0 0% 100%;
 
     --destructive: 0 62.8% 50%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 140 20% 20%;
-    --input: 140 20% 20%;
-    --ring: 142 76% 36%;
+    --border: 142 20% 22%;
+    --input: 142 20% 22%;
+    --ring: 142 71% 40%;
 
-    --success: 142 76% 36%;
+    --success: 142 71% 40%;
     --success-foreground: 0 0% 100%;
-
-    --gradient-primary: linear-gradient(135deg, hsl(142 76% 36%), hsl(86 60% 55%));
-    --gradient-hero: linear-gradient(180deg, hsl(140 25% 12%), hsl(140 30% 8%));
-
-    --shadow-card: 0 4px 20px -4px hsl(0 0% 0% / 0.3);
-    --shadow-elevated: 0 10px 40px -8px hsl(0 0% 0% / 0.5);
     --sidebar-background: 240 5.9% 10%;
     --sidebar-foreground: 240 4.8% 95.9%;
     --sidebar-primary: 224.3 76.3% 48%;
@@ -119,5 +110,6 @@ All colors MUST be HSL.
 
   body {
     @apply bg-background text-foreground;
+    font-family: 'Montserrat', sans-serif;
   }
 }
