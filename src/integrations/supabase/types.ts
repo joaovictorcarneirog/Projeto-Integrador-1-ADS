@@ -14,7 +14,344 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      carrinho_produto: {
+        Row: {
+          fk_cliente_id: string | null
+          fk_produto_id: number | null
+          id: number
+          quantidade: number
+          valor_total_item: number
+        }
+        Insert: {
+          fk_cliente_id?: string | null
+          fk_produto_id?: number | null
+          id?: never
+          quantidade?: number
+          valor_total_item: number
+        }
+        Update: {
+          fk_cliente_id?: string | null
+          fk_produto_id?: number | null
+          id?: never
+          quantidade?: number
+          valor_total_item?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "carrinho_produto_fk_cliente_id_fkey"
+            columns: ["fk_cliente_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "carrinho_produto_fk_produto_id_fkey"
+            columns: ["fk_produto_id"]
+            isOneToOne: false
+            referencedRelation: "produto"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      endereco: {
+        Row: {
+          cep: number | null
+          fk_cliente_id: string | null
+          fk_unidade_id: number | null
+          id: number
+          rua: string | null
+        }
+        Insert: {
+          cep?: number | null
+          fk_cliente_id?: string | null
+          fk_unidade_id?: number | null
+          id?: never
+          rua?: string | null
+        }
+        Update: {
+          cep?: number | null
+          fk_cliente_id?: string | null
+          fk_unidade_id?: number | null
+          id?: never
+          rua?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "endereco_fk_cliente_id_fkey"
+            columns: ["fk_cliente_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "endereco_fk_unidade_id_fkey"
+            columns: ["fk_unidade_id"]
+            isOneToOne: false
+            referencedRelation: "unidade"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      favoritos: {
+        Row: {
+          fk_cliente_id: string | null
+          id: number
+        }
+        Insert: {
+          fk_cliente_id?: string | null
+          id?: never
+        }
+        Update: {
+          fk_cliente_id?: string | null
+          id?: never
+        }
+        Relationships: [
+          {
+            foreignKeyName: "favoritos_fk_cliente_id_fkey"
+            columns: ["fk_cliente_id"]
+            isOneToOne: true
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      forma_de_pagamento: {
+        Row: {
+          id: number
+          nome: string
+        }
+        Insert: {
+          id?: never
+          nome: string
+        }
+        Update: {
+          id?: never
+          nome?: string
+        }
+        Relationships: []
+      }
+      pedido: {
+        Row: {
+          data_pedido: string | null
+          fk_cliente_id: string | null
+          fk_unidade_id: number | null
+          id: number
+          valor_total: number | null
+        }
+        Insert: {
+          data_pedido?: string | null
+          fk_cliente_id?: string | null
+          fk_unidade_id?: number | null
+          id?: never
+          valor_total?: number | null
+        }
+        Update: {
+          data_pedido?: string | null
+          fk_cliente_id?: string | null
+          fk_unidade_id?: number | null
+          id?: never
+          valor_total?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pedido_fk_cliente_id_fkey"
+            columns: ["fk_cliente_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "pedido_fk_unidade_id_fkey"
+            columns: ["fk_unidade_id"]
+            isOneToOne: false
+            referencedRelation: "unidade"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      produto: {
+        Row: {
+          created_at: string | null
+          data_vencimento: string | null
+          descricao: string | null
+          fk_tipo_produto_id: number | null
+          fk_vendedor_id: string | null
+          id: number
+          imagem: string | null
+          mime: string | null
+          nome: string
+          preco: number
+          quantidade: number | null
+        }
+        Insert: {
+          created_at?: string | null
+          data_vencimento?: string | null
+          descricao?: string | null
+          fk_tipo_produto_id?: number | null
+          fk_vendedor_id?: string | null
+          id?: never
+          imagem?: string | null
+          mime?: string | null
+          nome: string
+          preco: number
+          quantidade?: number | null
+        }
+        Update: {
+          created_at?: string | null
+          data_vencimento?: string | null
+          descricao?: string | null
+          fk_tipo_produto_id?: number | null
+          fk_vendedor_id?: string | null
+          id?: never
+          imagem?: string | null
+          mime?: string | null
+          nome?: string
+          preco?: number
+          quantidade?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "produto_fk_tipo_produto_id_fkey"
+            columns: ["fk_tipo_produto_id"]
+            isOneToOne: false
+            referencedRelation: "tipo_produto"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "produto_fk_vendedor_id_fkey"
+            columns: ["fk_vendedor_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      produto_favorito: {
+        Row: {
+          fk_favoritos_id: number
+          fk_produto_id: number
+        }
+        Insert: {
+          fk_favoritos_id: number
+          fk_produto_id: number
+        }
+        Update: {
+          fk_favoritos_id?: number
+          fk_produto_id?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "produto_favorito_fk_favoritos_id_fkey"
+            columns: ["fk_favoritos_id"]
+            isOneToOne: false
+            referencedRelation: "favoritos"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "produto_favorito_fk_produto_id_fkey"
+            columns: ["fk_produto_id"]
+            isOneToOne: false
+            referencedRelation: "produto"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      profiles: {
+        Row: {
+          cpf: number | null
+          created_at: string | null
+          data_nasc: string | null
+          id: string
+          nome: string
+          tipo_usuario: string
+        }
+        Insert: {
+          cpf?: number | null
+          created_at?: string | null
+          data_nasc?: string | null
+          id: string
+          nome: string
+          tipo_usuario: string
+        }
+        Update: {
+          cpf?: number | null
+          created_at?: string | null
+          data_nasc?: string | null
+          id?: string
+          nome?: string
+          tipo_usuario?: string
+        }
+        Relationships: []
+      }
+      telefone: {
+        Row: {
+          fk_cliente_id: string | null
+          fk_vendedor_id: string | null
+          id: number
+          numero: number | null
+          principal: boolean | null
+        }
+        Insert: {
+          fk_cliente_id?: string | null
+          fk_vendedor_id?: string | null
+          id?: never
+          numero?: number | null
+          principal?: boolean | null
+        }
+        Update: {
+          fk_cliente_id?: string | null
+          fk_vendedor_id?: string | null
+          id?: never
+          numero?: number | null
+          principal?: boolean | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "telefone_fk_cliente_id_fkey"
+            columns: ["fk_cliente_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "telefone_fk_vendedor_id_fkey"
+            columns: ["fk_vendedor_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      tipo_produto: {
+        Row: {
+          id: number
+          nome: string
+        }
+        Insert: {
+          id?: never
+          nome: string
+        }
+        Update: {
+          id?: never
+          nome?: string
+        }
+        Relationships: []
+      }
+      unidade: {
+        Row: {
+          id: number
+          nome: string
+        }
+        Insert: {
+          id?: never
+          nome: string
+        }
+        Update: {
+          id?: never
+          nome?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
