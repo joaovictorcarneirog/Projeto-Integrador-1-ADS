@@ -36,6 +36,8 @@ const CadastrarProduto = () => {
   const checkAuth = async () => {
     const { data: { session } } = await supabase.auth.getSession();
     
+    console.log("Sessão atual:", session);
+    
     if (!session?.user) {
       toast({
         title: "Acesso Negado",
@@ -47,11 +49,14 @@ const CadastrarProduto = () => {
     }
 
     // Verificar se é vendedor
-    const { data: profile } = await supabase
+    const { data: profile, error: profileError } = await supabase
       .from("profiles")
-      .select("tipo_usuario")
+      .select("tipo_usuario, nome")
       .eq("id", session.user.id)
       .single();
+
+    console.log("Perfil do usuário:", profile);
+    console.log("Erro ao buscar perfil:", profileError);
 
     if (profile?.tipo_usuario !== "vendedor") {
       toast({
@@ -64,6 +69,7 @@ const CadastrarProduto = () => {
     }
 
     setUserId(session.user.id);
+    console.log("Usuário autorizado como vendedor:", session.user.id);
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -139,20 +145,26 @@ const CadastrarProduto = () => {
       // Se fez upload de arquivo
       else if (imagem) {
         const fileExt = imagem.name.split('.').pop();
-        const fileName = `${session.user.id}-${Date.now()}.${fileExt}`;
-        const filePath = `produtos/${fileName}`;
+        const fileName = `${Date.now()}.${fileExt}`;
+        const filePath = `produtos/${session.user.id}/${fileName}`;
+
+        console.log("Upload path:", filePath);
 
         const { error: uploadError } = await supabase.storage
           .from('produtos')
           .upload(filePath, imagem);
 
-        if (uploadError) throw uploadError;
+        if (uploadError) {
+          console.error("Erro no upload:", uploadError);
+          throw uploadError;
+        }
 
         // Obter URL pública
         const { data: { publicUrl } } = supabase.storage
           .from('produtos')
           .getPublicUrl(filePath);
 
+        console.log("URL pública:", publicUrl);
         imagemUrl = publicUrl;
       }
 
