@@ -9,6 +9,7 @@ import { Heart, ShoppingCart, Plus } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import { byteaToString } from "@/lib/supabase-utils";
 import { getProductImageUrl } from "@/lib/product-images";
 
 interface Product {
@@ -63,6 +64,7 @@ const Index = () => {
 
       const productsWithPhone = data?.map((p: any) => ({
         ...p,
+        imagem: byteaToString(p.imagem), // Converter BYTEA para string
         telefone_numero: p.telefone?.[0]?.numero || "",
       })) || [];
 

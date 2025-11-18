@@ -21,6 +21,31 @@ export function byteaToDataUrl(bytea: any, mime: string): string {
   return `data:${mime || "image/jpeg"};base64,${base64}`;
 }
 
+// Converter BYTEA que contém texto para string
+export function byteaToString(bytea: any): string {
+  if (!bytea) return "";
+  
+  // Se já é uma string
+  if (typeof bytea === "string") return bytea;
+  
+  // Se é um Uint8Array ou array de bytes
+  if (bytea instanceof Uint8Array) {
+    return new TextDecoder().decode(bytea);
+  }
+  
+  // Se é um array normal de números
+  if (Array.isArray(bytea)) {
+    return String.fromCharCode(...bytea);
+  }
+  
+  // Se tem uma propriedade data (formato do Supabase)
+  if (bytea.data && Array.isArray(bytea.data)) {
+    return String.fromCharCode(...bytea.data);
+  }
+  
+  return "";
+}
+
 // Upload de imagem para storage (opcional, para substituir BYTEA)
 export async function uploadProductImage(file: File, productId: number) {
   const fileExt = file.name.split(".").pop();
