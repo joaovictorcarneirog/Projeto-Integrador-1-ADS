@@ -231,12 +231,17 @@ const Index = () => {
           {isVendedor && (
             <div className="md:col-span-4">
               <Card className="sticky top-20">
-                <CardContent className="p-6">
-                  <h3 className="text-xl font-bold mb-4 text-center">Adicionar Produto</h3>
+                <CardContent className="p-6 space-y-3">
+                  <h3 className="text-xl font-bold mb-4 text-center">Painel do Vendedor</h3>
                   <Link to="/cadastrar-produto">
                     <Button className="w-full" size="lg">
                       <Plus className="mr-2 h-5 w-5" />
                       Adicionar Produto
+                    </Button>
+                  </Link>
+                  <Link to="/meus-produtos">
+                    <Button className="w-full" variant="outline" size="lg">
+                      Ver Meus Produtos
                     </Button>
                   </Link>
                 </CardContent>
