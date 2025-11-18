@@ -8,7 +8,7 @@ import { Heart, ShoppingCart, Plus } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { byteaToDataUrl } from "@/lib/supabase-utils";
+import { getProductImageUrl } from "@/lib/product-images";
 
 interface Product {
   id: number;
@@ -17,8 +17,7 @@ interface Product {
   descricao: string;
   data_vencimento: string;
   quantidade: number;
-  imagem: any;
-  mime: string;
+  imagem: string | null;
   telefone_numero?: string;
 }
 
@@ -242,9 +241,7 @@ const Index = () => {
             <h3 className="text-2xl font-bold mb-6 text-center">Produtos Disponíveis</h3>
             <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
               {products.map((product) => {
-                const imageUrl = product.imagem 
-                  ? byteaToDataUrl(product.imagem, product.mime)
-                  : "https://images.unsplash.com/photo-1506617564039-2f3b650b7b66?w=400";
+                const imageUrl = getProductImageUrl(product.imagem);
                 
                 return (
                 <Card key={product.id} className="overflow-hidden hover:shadow-lg transition-shadow">
