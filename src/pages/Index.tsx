@@ -59,11 +59,20 @@ const Index = () => {
 
       if (error) throw error;
 
-      const productsWithImage = data?.map((p: any) => ({
-        ...p,
-        imagem: p.imagem, // Usar URL direta do Storage ou imagem carregada
-        vendedor_nome: p.profiles?.nome || "Vendedor Desconhecido",
-      })) || [];
+      const productsWithImage = data?.map((p: any) => {
+        // Converter BYTEA para string se necessário
+        let imagemUrl = p.imagem;
+        if (p.imagem && typeof p.imagem === 'object' && p.imagem.data) {
+          // É um Buffer/BYTEA, converter para string
+          imagemUrl = String.fromCharCode(...p.imagem.data);
+        }
+        
+        return {
+          ...p,
+          imagem: imagemUrl,
+          vendedor_nome: p.profiles?.nome || "Vendedor Desconhecido",
+        };
+      }) || [];
 
       setProducts(productsWithImage);
     } catch (error) {
