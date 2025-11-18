@@ -20,7 +20,6 @@ interface Product {
   data_vencimento: string;
   quantidade: number;
   imagem: string | null;
-  telefone_numero?: string;
 }
 
 const Index = () => {
@@ -54,21 +53,17 @@ const Index = () => {
     try {
       const { data, error } = await supabase
         .from("produto")
-        .select(`
-          *,
-          telefone:telefone!telefone_fk_vendedor_id_fkey(numero)
-        `)
+        .select("*")
         .order("created_at", { ascending: false });
 
       if (error) throw error;
 
-      const productsWithPhone = data?.map((p: any) => ({
+      const productsWithImageConverted = data?.map((p: any) => ({
         ...p,
-        imagem: byteaToString(p.imagem), // Converter BYTEA para string
-        telefone_numero: p.telefone?.[0]?.numero || "",
+        imagem: byteaToString(p.imagem),
       })) || [];
 
-      setProducts(productsWithPhone);
+      setProducts(productsWithImageConverted);
     } catch (error) {
       console.error("Erro ao buscar produtos:", error);
       toast({
@@ -175,10 +170,9 @@ const Index = () => {
     }
   };
 
-  const handleWhatsApp = (phone: string | number, productName: string) => {
-    const cleanPhone = String(phone).replace(/\D/g, "");
-    const message = encodeURIComponent(`Olá! Tenho interesse no produto: ${productName}`);
-    window.open(`https://wa.me/55${cleanPhone}?text=${message}`, "_blank");
+  const handleWhatsApp = (product: Product) => {
+    const message = encodeURIComponent(`Olá! Tenho interesse no produto: ${product.nome} - R$ ${product.preco}`);
+    window.open(`https://wa.me/?text=${message}`, "_blank");
   };
 
   return (
@@ -289,8 +283,7 @@ const Index = () => {
                       </Button>
                       <Button
                         className="flex-1"
-                        onClick={() => handleWhatsApp(product.telefone_numero || "", product.nome)}
-                        disabled={!product.telefone_numero}
+                        onClick={() => handleWhatsApp(product)}
                       >
                         Falar com Vendedor
                       </Button>
