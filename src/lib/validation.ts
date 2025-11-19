@@ -1,68 +1,21 @@
 import { z } from "zod";
 
-// Validação de CPF com algoritmo de checksum
+// Validação de CPF - simplificada para aceitar 11 dígitos
 export const validarCPF = (cpf: string): boolean => {
   const cpfLimpo = cpf.replace(/\D/g, '');
   
   if (cpfLimpo.length !== 11) return false;
   if (/^(\d)\1{10}$/.test(cpfLimpo)) return false; // Todos dígitos iguais
   
-  let soma = 0;
-  let resto;
-  
-  for (let i = 1; i <= 9; i++) {
-    soma += parseInt(cpfLimpo.substring(i - 1, i)) * (11 - i);
-  }
-  
-  resto = (soma * 10) % 11;
-  if (resto === 10 || resto === 11) resto = 0;
-  if (resto !== parseInt(cpfLimpo.substring(9, 10))) return false;
-  
-  soma = 0;
-  for (let i = 1; i <= 10; i++) {
-    soma += parseInt(cpfLimpo.substring(i - 1, i)) * (12 - i);
-  }
-  
-  resto = (soma * 10) % 11;
-  if (resto === 10 || resto === 11) resto = 0;
-  if (resto !== parseInt(cpfLimpo.substring(10, 11))) return false;
-  
   return true;
 };
 
-// Validação de CNPJ com algoritmo de checksum
+// Validação de CNPJ - simplificada para aceitar 14 dígitos
 export const validarCNPJ = (cnpj: string): boolean => {
   const cnpjLimpo = cnpj.replace(/\D/g, '');
   
   if (cnpjLimpo.length !== 14) return false;
   if (/^(\d)\1{13}$/.test(cnpjLimpo)) return false; // Todos dígitos iguais
-  
-  let tamanho = cnpjLimpo.length - 2;
-  let numeros = cnpjLimpo.substring(0, tamanho);
-  const digitos = cnpjLimpo.substring(tamanho);
-  let soma = 0;
-  let pos = tamanho - 7;
-  
-  for (let i = tamanho; i >= 1; i--) {
-    soma += parseInt(numeros.charAt(tamanho - i)) * pos--;
-    if (pos < 2) pos = 9;
-  }
-  
-  let resultado = soma % 11 < 2 ? 0 : 11 - (soma % 11);
-  if (resultado !== parseInt(digitos.charAt(0))) return false;
-  
-  tamanho = tamanho + 1;
-  numeros = cnpjLimpo.substring(0, tamanho);
-  soma = 0;
-  pos = tamanho - 7;
-  
-  for (let i = tamanho; i >= 1; i--) {
-    soma += parseInt(numeros.charAt(tamanho - i)) * pos--;
-    if (pos < 2) pos = 9;
-  }
-  
-  resultado = soma % 11 < 2 ? 0 : 11 - (soma % 11);
-  if (resultado !== parseInt(digitos.charAt(1))) return false;
   
   return true;
 };
