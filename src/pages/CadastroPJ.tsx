@@ -26,7 +26,27 @@ const CadastroPJ = () => {
   const { toast } = useToast();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    
+    // Aplicar máscaras para CPF e CNPJ
+    if (name === 'cpf') {
+      const apenasNumeros = value.replace(/\D/g, '').slice(0, 11);
+      const cpfFormatado = apenasNumeros
+        .replace(/(\d{3})(\d)/, '$1.$2')
+        .replace(/(\d{3})(\d)/, '$1.$2')
+        .replace(/(\d{3})(\d{1,2})$/, '$1-$2');
+      setFormData({ ...formData, [name]: cpfFormatado });
+    } else if (name === 'cnpj') {
+      const apenasNumeros = value.replace(/\D/g, '').slice(0, 14);
+      const cnpjFormatado = apenasNumeros
+        .replace(/(\d{2})(\d)/, '$1.$2')
+        .replace(/(\d{3})(\d)/, '$1.$2')
+        .replace(/(\d{3})(\d)/, '$1/$2')
+        .replace(/(\d{4})(\d{1,2})$/, '$1-$2');
+      setFormData({ ...formData, [name]: cnpjFormatado });
+    } else {
+      setFormData({ ...formData, [name]: value });
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -131,25 +151,25 @@ const CadastroPJ = () => {
 
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label htmlFor="cpf">CPF (apenas números)</Label>
+                    <Label htmlFor="cpf">CPF</Label>
                     <Input
                       id="cpf"
                       name="cpf"
                       value={formData.cpf}
                       onChange={handleChange}
-                      placeholder="00000000000"
-                      maxLength={11}
+                      placeholder="000.000.000-00"
+                      maxLength={14}
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="cnpj">CNPJ (apenas números)</Label>
+                    <Label htmlFor="cnpj">CNPJ</Label>
                     <Input
                       id="cnpj"
                       name="cnpj"
                       value={formData.cnpj}
                       onChange={handleChange}
-                      placeholder="00000000000000"
-                      maxLength={14}
+                      placeholder="00.000.000/0000-00"
+                      maxLength={18}
                     />
                   </div>
                 </div>
