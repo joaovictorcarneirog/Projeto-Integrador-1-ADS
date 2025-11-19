@@ -40,16 +40,8 @@ const CadastroPJ = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    // Preparar dados convertendo strings vazias para undefined
-    const dadosParaValidar = {
-      ...formData,
-      cpf: formData.cpf.trim() || undefined,
-      cnpj: formData.cnpj.trim() || undefined,
-      horario_funcionamento: formData.horario_funcionamento.trim() || undefined,
-    };
-
     // Validar com Zod
-    const validacao = cadastroPJSchema.safeParse(dadosParaValidar);
+    const validacao = cadastroPJSchema.safeParse(formData);
     
     if (!validacao.success) {
       const primeiroErro = validacao.error.issues[0];
