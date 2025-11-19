@@ -4,21 +4,10 @@ import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Heart, ShoppingCart, Plus, Edit, Trash2 } from "lucide-react";
-import { Link, useNavigate } from "react-router-dom";
+import { Heart, ShoppingCart, Plus } from "lucide-react";
+import { Link } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
 
 interface Product {
   id: number;
@@ -30,18 +19,13 @@ interface Product {
   imagem: string | null;
   vendedor_nome?: string;
   vendedor_celular?: string;
-  fk_vendedor_id?: string;
 }
 
 const Index = () => {
-  const [allProducts, setAllProducts] = useState<Product[]>([]);
-  const [myProducts, setMyProducts] = useState<Product[]>([]);
-  const [otherProducts, setOtherProducts] = useState<Product[]>([]);
+  const [products, setProducts] = useState<Product[]>([]);
   const [isVendedor, setIsVendedor] = useState(false);
   const [userId, setUserId] = useState<string | null>(null);
-  const [deleteId, setDeleteId] = useState<number | null>(null);
   const { toast } = useToast();
-  const navigate = useNavigate();
 
   useEffect(() => {
     checkUser();
@@ -77,8 +61,10 @@ const Index = () => {
       if (error) throw error;
 
       const productsWithImage = data?.map((p: any) => {
+        // Converter BYTEA para string se necessário
         let imagemUrl = p.imagem;
         if (p.imagem && typeof p.imagem === 'object' && p.imagem.data) {
+          // É um Buffer/BYTEA, converter para string
           imagemUrl = String.fromCharCode(...p.imagem.data);
         }
         
@@ -90,17 +76,7 @@ const Index = () => {
         };
       }) || [];
 
-      setAllProducts(productsWithImage);
-      
-      // Separar produtos próprios e de outros vendedores
-      if (userId) {
-        const mine = productsWithImage.filter(p => p.fk_vendedor_id === userId);
-        const others = productsWithImage.filter(p => p.fk_vendedor_id !== userId);
-        setMyProducts(mine);
-        setOtherProducts(others);
-      } else {
-        setOtherProducts(productsWithImage);
-      }
+      setProducts(productsWithImage);
     } catch (error) {
       console.error("Erro ao buscar produtos:", error);
       toast({
@@ -172,6 +148,7 @@ const Index = () => {
     }
 
     try {
+      // Primeiro, garantir que o usuário tem uma lista de favoritos
       const { data: favList, error: favError } = await supabase
         .from("favoritos")
         .select("id")
@@ -191,6 +168,7 @@ const Index = () => {
         favoritosId = newFav.id;
       }
 
+      // Adicionar produto aos favoritos
       const { error } = await supabase
         .from("produto_favorito")
         .insert({
@@ -222,116 +200,6 @@ const Index = () => {
       });
     }
   };
-
-  const handleDelete = async () => {
-    if (!deleteId) return;
-
-    try {
-      const { error } = await supabase
-        .from("produto")
-        .delete()
-        .eq("id", deleteId);
-
-      if (error) throw error;
-
-      toast({
-        title: "Sucesso!",
-        description: "Produto excluído com sucesso!",
-      });
-
-      // Atualizar listas
-      setMyProducts(myProducts.filter(p => p.id !== deleteId));
-      setAllProducts(allProducts.filter(p => p.id !== deleteId));
-      setDeleteId(null);
-      
-      // Recarregar produtos
-      fetchProducts();
-    } catch (error: any) {
-      console.error("Erro ao deletar produto:", error);
-      toast({
-        title: "Erro",
-        description: error.message || "Erro ao excluir produto.",
-        variant: "destructive",
-      });
-    }
-  };
-
-  const renderProductCard = (product: Product, showActions: boolean = false) => (
-    <Card key={product.id} className="overflow-hidden hover:shadow-lg transition-shadow">
-      <div className="aspect-video relative">
-        <img
-          src={product.imagem || "https://images.unsplash.com/photo-1506617564039-2f3b650b7b66?w=400"}
-          alt={product.nome}
-          className="w-full h-full object-cover"
-        />
-      </div>
-      <CardContent className="p-4">
-        <div className="flex items-start justify-between gap-2 mb-2">
-          <h4 className="font-semibold text-lg flex-1">{product.nome}</h4>
-        </div>
-        <p className="text-xs text-muted-foreground mb-2 flex items-center gap-1">
-          <span className="font-medium">Por:</span> {product.vendedor_nome}
-        </p>
-        <p className="text-2xl font-bold text-primary mb-2">
-          {product.preco === "0.00" || product.preco === "0" ? "Grátis" : `R$ ${product.preco}`}
-        </p>
-        <p className="text-sm text-muted-foreground mb-1">
-          <strong>Validade:</strong>{" "}
-          {new Date(product.data_vencimento).toLocaleDateString("pt-BR")}
-        </p>
-        <p className="text-sm text-muted-foreground mb-3">
-          <strong>Quantidade:</strong> {product.quantidade}
-        </p>
-        <p className="text-sm mb-4 line-clamp-2">{product.descricao}</p>
-        
-        {showActions ? (
-          <div className="flex gap-2">
-            <Button
-              variant="outline"
-              size="sm"
-              className="flex-1"
-              onClick={() => navigate(`/cadastrar-produto?id=${product.id}`)}
-            >
-              <Edit className="h-4 w-4 mr-2" />
-              Editar
-            </Button>
-            <Button
-              variant="destructive"
-              size="sm"
-              onClick={() => setDeleteId(product.id)}
-            >
-              <Trash2 className="h-4 w-4" />
-            </Button>
-          </div>
-        ) : (
-          <div className="flex gap-2">
-            <Button
-              variant="outline"
-              size="icon"
-              onClick={() => addToFavorites(product.id)}
-              title="Adicionar aos favoritos"
-            >
-              <Heart className="h-4 w-4" />
-            </Button>
-            <Button
-              variant="outline"
-              size="icon"
-              onClick={() => addToCart(product.id, product.preco)}
-              title="Adicionar ao carrinho"
-            >
-              <ShoppingCart className="h-4 w-4" />
-            </Button>
-            <Button
-              className="flex-1"
-              onClick={() => handleWhatsApp(product)}
-            >
-              Falar com Vendedor
-            </Button>
-          </div>
-        )}
-      </CardContent>
-    </Card>
-  );
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
@@ -370,6 +238,101 @@ const Index = () => {
           <CarouselNext className="right-4" />
         </Carousel>
       </section>
+
+      {/* Main Content */}
+      <main className="container mx-auto px-4 py-8 flex-1">
+        <div className="grid md:grid-cols-12 gap-6">
+          {/* Sidebar - Add Product (Vendors Only) */}
+          {isVendedor && (
+            <div className="md:col-span-4">
+              <Card className="sticky top-20">
+                <CardContent className="p-6 space-y-3">
+                  <h3 className="text-xl font-bold mb-4 text-center">Painel do Vendedor</h3>
+                  <Link to="/cadastrar-produto">
+                    <Button className="w-full" size="lg">
+                      <Plus className="mr-2 h-5 w-5" />
+                      Adicionar Produto
+                    </Button>
+                  </Link>
+                  <Link to="/meus-produtos">
+                    <Button className="w-full" variant="outline" size="lg">
+                      Ver Meus Produtos
+                    </Button>
+                  </Link>
+                </CardContent>
+              </Card>
+            </div>
+          )}
+
+          {/* Products Grid */}
+          <div className={isVendedor ? "md:col-span-8" : "md:col-span-12"}>
+            <h3 className="text-2xl font-bold mb-6 text-center">Produtos Disponíveis</h3>
+            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              {products.map((product) => (
+                <Card key={product.id} className="overflow-hidden hover:shadow-lg transition-shadow">
+                  <div className="aspect-video relative">
+                    <img
+                      src={product.imagem || "https://images.unsplash.com/photo-1506617564039-2f3b650b7b66?w=400"}
+                      alt={product.nome}
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                  <CardContent className="p-4">
+                    <div className="flex items-start justify-between gap-2 mb-2">
+                      <h4 className="font-semibold text-lg flex-1">{product.nome}</h4>
+                    </div>
+                    <p className="text-xs text-muted-foreground mb-2 flex items-center gap-1">
+                      <span className="font-medium">Por:</span> {product.vendedor_nome}
+                    </p>
+                    <p className="text-2xl font-bold text-primary mb-2">
+                      {product.preco === "0.00" || product.preco === "0" ? "Grátis" : `R$ ${product.preco}`}
+                    </p>
+                    <p className="text-sm text-muted-foreground mb-1">
+                      <strong>Validade:</strong>{" "}
+                      {new Date(product.data_vencimento).toLocaleDateString("pt-BR")}
+                    </p>
+                    <p className="text-sm text-muted-foreground mb-3">
+                      <strong>Quantidade:</strong> {product.quantidade}
+                    </p>
+                    <p className="text-sm mb-4 line-clamp-2">{product.descricao}</p>
+                    
+                    <div className="flex gap-2">
+                      <Button
+                        variant="outline"
+                        size="icon"
+                        onClick={() => addToFavorites(product.id)}
+                        title="Adicionar aos favoritos"
+                      >
+                        <Heart className="h-4 w-4" />
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="icon"
+                        onClick={() => addToCart(product.id, product.preco)}
+                        title="Adicionar ao carrinho"
+                      >
+                        <ShoppingCart className="h-4 w-4" />
+                      </Button>
+                      <Button
+                        className="flex-1"
+                        onClick={() => handleWhatsApp(product)}
+                      >
+                        Falar com Vendedor
+                      </Button>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+
+            {products.length === 0 && (
+              <div className="text-center py-12">
+                <p className="text-muted-foreground text-lg">Nenhum produto disponível no momento.</p>
+              </div>
+            )}
+          </div>
+        </div>
+      </main>
 
       <Footer />
     </div>
