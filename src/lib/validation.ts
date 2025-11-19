@@ -120,11 +120,9 @@ export const cadastroPJSchema = z.object({
     .max(100, "Senha muito longa"),
   confirmarSenha: z.string(),
   cpf: z.string()
-    .transform(val => val === "" ? undefined : val)
     .optional()
     .refine((val) => !val || validarCPF(val), "CPF inválido"),
   cnpj: z.string()
-    .transform(val => val === "" ? undefined : val)
     .optional()
     .refine((val) => !val || validarCNPJ(val), "CNPJ inválido"),
   celular: z.string()
@@ -142,11 +140,7 @@ export const cadastroPJSchema = z.object({
 }).refine((data) => data.senha === data.confirmarSenha, {
   message: "As senhas não coincidem",
   path: ["confirmarSenha"],
-}).refine((data) => {
-  const temCpf = data.cpf && data.cpf.length > 0;
-  const temCnpj = data.cnpj && data.cnpj.length > 0;
-  return temCpf || temCnpj;
-}, {
+}).refine((data) => data.cpf || data.cnpj, {
   message: "Preencha CPF ou CNPJ",
   path: ["cnpj"],
 });
