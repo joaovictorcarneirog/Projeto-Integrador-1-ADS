@@ -40,11 +40,14 @@ const CadastroPJ = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
+    console.log("Dados do formulário antes da validação:", formData);
+
     // Validar com Zod
     const validacao = cadastroPJSchema.safeParse(formData);
     
     if (!validacao.success) {
       const primeiroErro = validacao.error.issues[0];
+      console.log("Erro de validação:", validacao.error.issues);
       toast({
         title: "Erro de Validação",
         description: primeiroErro.message,
@@ -53,12 +56,15 @@ const CadastroPJ = () => {
       return;
     }
 
+    console.log("Validação passou! Dados validados:", validacao.data);
     setLoading(true);
 
     try {
       // Remover formatação do CPF e CNPJ (deixar apenas números)
       const cpfLimpo = formData.cpf ? formData.cpf.replace(/\D/g, '') : undefined;
       const cnpjLimpo = formData.cnpj ? formData.cnpj.replace(/\D/g, '') : undefined;
+      
+      console.log("CPF limpo:", cpfLimpo, "CNPJ limpo:", cnpjLimpo);
       
       const { data, error } = await supabase.auth.signUp({
         email: formData.email,
@@ -86,6 +92,7 @@ const CadastroPJ = () => {
       
       navigate("/login");
     } catch (error: any) {
+      console.error("Erro ao criar conta:", error);
       toast({
         title: "Erro",
         description: error.message || "Erro ao criar conta.",
