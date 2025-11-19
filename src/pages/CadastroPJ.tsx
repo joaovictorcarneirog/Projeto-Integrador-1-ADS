@@ -28,22 +28,10 @@ const CadastroPJ = () => {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     
-    // Aplicar máscaras para CPF e CNPJ
-    if (name === 'cpf') {
-      const apenasNumeros = value.replace(/\D/g, '').slice(0, 11);
-      const cpfFormatado = apenasNumeros
-        .replace(/(\d{3})(\d)/, '$1.$2')
-        .replace(/(\d{3})(\d)/, '$1.$2')
-        .replace(/(\d{3})(\d{1,2})$/, '$1-$2');
-      setFormData({ ...formData, [name]: cpfFormatado });
-    } else if (name === 'cnpj') {
-      const apenasNumeros = value.replace(/\D/g, '').slice(0, 14);
-      const cnpjFormatado = apenasNumeros
-        .replace(/(\d{2})(\d)/, '$1.$2')
-        .replace(/(\d{3})(\d)/, '$1.$2')
-        .replace(/(\d{3})(\d)/, '$1/$2')
-        .replace(/(\d{4})(\d{1,2})$/, '$1-$2');
-      setFormData({ ...formData, [name]: cnpjFormatado });
+    // Aceitar apenas números para CPF e CNPJ
+    if (name === 'cpf' || name === 'cnpj') {
+      const apenasNumeros = value.replace(/\D/g, '');
+      setFormData({ ...formData, [name]: apenasNumeros });
     } else {
       setFormData({ ...formData, [name]: value });
     }
@@ -151,25 +139,29 @@ const CadastroPJ = () => {
 
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label htmlFor="cpf">CPF</Label>
+                    <Label htmlFor="cpf">CPF (11 dígitos)</Label>
                     <Input
                       id="cpf"
                       name="cpf"
+                      type="text"
+                      inputMode="numeric"
                       value={formData.cpf}
                       onChange={handleChange}
-                      placeholder="000.000.000-00"
-                      maxLength={14}
+                      placeholder="00000000000"
+                      maxLength={11}
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="cnpj">CNPJ</Label>
+                    <Label htmlFor="cnpj">CNPJ (14 dígitos)</Label>
                     <Input
                       id="cnpj"
                       name="cnpj"
+                      type="text"
+                      inputMode="numeric"
                       value={formData.cnpj}
                       onChange={handleChange}
-                      placeholder="00.000.000/0000-00"
-                      maxLength={18}
+                      placeholder="00000000000000"
+                      maxLength={14}
                     />
                   </div>
                 </div>
