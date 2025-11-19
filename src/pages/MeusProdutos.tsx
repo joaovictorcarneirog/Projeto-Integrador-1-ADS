@@ -203,12 +203,7 @@ const MeusProdutos = () => {
                         variant="outline"
                         size="sm"
                         className="flex-1"
-                        onClick={() => {
-                          toast({
-                            title: "Em breve",
-                            description: "Funcionalidade de edição em desenvolvimento.",
-                          });
-                        }}
+                        onClick={() => navigate(`/cadastrar-produto?id=${product.id}`)}
                       >
                         <Edit className="h-4 w-4 mr-2" />
                         Editar

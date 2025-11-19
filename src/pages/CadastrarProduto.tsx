@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -13,6 +13,10 @@ import { ArrowLeft, Upload } from "lucide-react";
 import { Link } from "react-router-dom";
 
 const CadastrarProduto = () => {
+  const [searchParams] = useSearchParams();
+  const productId = searchParams.get("id");
+  const isEditing = !!productId;
+
   const [formData, setFormData] = useState({
     nome: "",
     descricao: "",
@@ -33,10 +37,14 @@ const CadastrarProduto = () => {
     checkAuth();
   }, []);
 
+  useEffect(() => {
+    if (isEditing && userId) {
+      loadProduct();
+    }
+  }, [productId, userId]);
+
   const checkAuth = async () => {
     const { data: { session } } = await supabase.auth.getSession();
-    
-    console.log("Sessão atual:", session);
     
     if (!session?.user) {
       toast({
@@ -55,9 +63,6 @@ const CadastrarProduto = () => {
       .eq("id", session.user.id)
       .single();
 
-    console.log("Perfil do usuário:", profile);
-    console.log("Erro ao buscar perfil:", profileError);
-
     if (profile?.tipo_usuario !== "vendedor") {
       toast({
         title: "Acesso Negado",
@@ -69,7 +74,40 @@ const CadastrarProduto = () => {
     }
 
     setUserId(session.user.id);
-    console.log("Usuário autorizado como vendedor:", session.user.id);
+  };
+
+  const loadProduct = async () => {
+    try {
+      const { data, error } = await supabase
+        .from("produto")
+        .select("*")
+        .eq("id", parseInt(productId!))
+        .single();
+
+      if (error) throw error;
+
+      setFormData({
+        nome: data.nome,
+        descricao: data.descricao || "",
+        preco: data.preco.toString(),
+        data_vencimento: data.data_vencimento,
+        quantidade: data.quantidade.toString(),
+        imagemUrl: data.imagem || "",
+      });
+
+      if (data.imagem) {
+        setPreviewUrl(data.imagem);
+        setUseUrl(true);
+      }
+    } catch (error: any) {
+      console.error("Erro ao carregar produto:", error);
+      toast({
+        title: "Erro",
+        description: "Não foi possível carregar o produto.",
+        variant: "destructive",
+      });
+      navigate("/meus-produtos");
+    }
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -168,7 +206,7 @@ const CadastrarProduto = () => {
         imagemUrl = publicUrl;
       }
 
-      // Inserir produto no banco
+      // Preparar dados do produto
       const produtoData = {
         nome: formData.nome,
         descricao: formData.descricao || null,
@@ -176,29 +214,37 @@ const CadastrarProduto = () => {
         data_vencimento: formData.data_vencimento,
         quantidade: parseInt(formData.quantidade),
         imagem: imagemUrl,
-        fk_vendedor_id: session.user.id,
       };
 
-      console.log("Inserindo produto:", produtoData);
+      if (isEditing) {
+        // Atualizar produto existente
+        const { error } = await supabase
+          .from("produto")
+          .update(produtoData)
+          .eq("id", parseInt(productId!));
 
-      const { data, error } = await supabase
-        .from("produto")
-        .insert(produtoData)
-        .select();
+        if (error) throw error;
 
-      if (error) {
-        console.error("Erro RLS:", error);
-        throw error;
+        toast({
+          title: "Sucesso!",
+          description: "Produto atualizado com sucesso!",
+        });
+      } else {
+        // Inserir novo produto
+        const { error } = await supabase
+          .from("produto")
+          .insert({ ...produtoData, fk_vendedor_id: session.user.id })
+          .select();
+
+        if (error) throw error;
+
+        toast({
+          title: "Sucesso!",
+          description: "Produto cadastrado com sucesso!",
+        });
       }
 
-      console.log("Produto inserido:", data);
-
-      toast({
-        title: "Sucesso!",
-        description: "Produto cadastrado com sucesso!",
-      });
-
-      navigate("/");
+      navigate("/meus-produtos");
     } catch (error: any) {
       console.error("Erro ao cadastrar produto:", error);
       toast({
@@ -224,7 +270,9 @@ const CadastrarProduto = () => {
 
           <Card>
             <CardHeader>
-              <CardTitle className="text-2xl">Cadastrar Produto</CardTitle>
+              <CardTitle className="text-2xl">
+                {isEditing ? "Editar Produto" : "Cadastrar Produto"}
+              </CardTitle>
             </CardHeader>
             <CardContent>
               <form onSubmit={handleSubmit} className="space-y-6">
