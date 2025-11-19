@@ -152,6 +152,80 @@ const Carrinho = () => {
 
   const total = items.reduce((sum, item) => sum + item.valor_total_item, 0);
 
+  const finalizarPedido = async () => {
+    if (!userId || items.length === 0) return;
+
+    try {
+      // Agrupar itens por vendedor
+      const itensPorVendedor: { [key: number]: typeof items } = {};
+      
+      for (const item of items) {
+        const { data: produto } = await supabase
+          .from("produto")
+          .select("fk_vendedor_id, profiles:fk_vendedor_id(nome, celular)")
+          .eq("id", item.produto_id)
+          .single();
+
+        if (produto?.fk_vendedor_id) {
+          if (!itensPorVendedor[produto.fk_vendedor_id]) {
+            itensPorVendedor[produto.fk_vendedor_id] = [];
+          }
+          itensPorVendedor[produto.fk_vendedor_id].push({
+            ...item,
+            vendedor_nome: (produto as any).profiles?.nome,
+            vendedor_celular: (produto as any).profiles?.celular,
+          });
+        }
+      }
+
+      // Para cada vendedor, gerar mensagem de WhatsApp
+      for (const vendedorId in itensPorVendedor) {
+        const itensVendedor = itensPorVendedor[vendedorId];
+        const vendedor = itensVendedor[0] as any;
+        
+        if (!vendedor.vendedor_celular) continue;
+
+        let mensagem = `🛒 *Novo Pedido - Xepa Social*\n\n`;
+        let totalVendedor = 0;
+
+        itensVendedor.forEach((item) => {
+          mensagem += `• ${item.quantidade}x ${item.produto_nome}\n`;
+          mensagem += `  R$ ${item.produto_preco.toFixed(2)} cada\n`;
+          mensagem += `  Subtotal: R$ ${item.valor_total_item.toFixed(2)}\n\n`;
+          totalVendedor += item.valor_total_item;
+        });
+
+        mensagem += `*Total: R$ ${totalVendedor.toFixed(2)}*`;
+
+        const celular = vendedor.vendedor_celular.replace(/\D/g, '');
+        const whatsappUrl = `https://wa.me/55${celular}?text=${encodeURIComponent(mensagem)}`;
+        window.open(whatsappUrl, '_blank');
+      }
+
+      // Limpar carrinho após enviar pedidos
+      const { error } = await supabase
+        .from("carrinho_produto")
+        .delete()
+        .eq("fk_cliente_id", userId);
+
+      if (error) throw error;
+
+      toast({
+        title: "Pedido Enviado!",
+        description: "Seu pedido foi enviado para os vendedores via WhatsApp.",
+      });
+
+      setItems([]);
+    } catch (error: any) {
+      console.error("Erro ao finalizar pedido:", error);
+      toast({
+        title: "Erro",
+        description: "Não foi possível finalizar o pedido.",
+        variant: "destructive",
+      });
+    }
+  };
+
   return (
     <div className="min-h-screen flex flex-col bg-background">
       <Navbar />
@@ -236,11 +310,11 @@ const Carrinho = () => {
                       <span className="text-primary">R$ {total.toFixed(2)}</span>
                     </div>
                   </div>
-                  <Button className="w-full" size="lg">
+                  <Button className="w-full" size="lg" onClick={finalizarPedido}>
                     Finalizar Pedido
                   </Button>
                   <p className="text-xs text-center text-muted-foreground mt-3">
-                    Entre em contato com os vendedores via WhatsApp
+                    Os vendedores serão notificados via WhatsApp
                   </p>
                 </CardContent>
               </Card>
