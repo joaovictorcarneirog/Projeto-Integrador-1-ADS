@@ -18,6 +18,7 @@ interface Product {
   quantidade: number;
   imagem: string | null;
   vendedor_nome?: string;
+  vendedor_celular?: string;
 }
 
 const Index = () => {
@@ -53,7 +54,7 @@ const Index = () => {
         .from("produto")
         .select(`
           *,
-          profiles:fk_vendedor_id(nome)
+          profiles:fk_vendedor_id(nome, celular)
         `)
         .order("created_at", { ascending: false });
 
@@ -71,6 +72,7 @@ const Index = () => {
           ...p,
           imagem: imagemUrl,
           vendedor_nome: p.profiles?.nome || "Vendedor Desconhecido",
+          vendedor_celular: p.profiles?.celular || "",
         };
       }) || [];
 
@@ -119,6 +121,24 @@ const Index = () => {
         variant: "destructive",
       });
     }
+  };
+
+  const handleWhatsApp = (product: Product) => {
+    if (!product.vendedor_celular) {
+      toast({
+        title: "Erro",
+        description: "Vendedor não possui telefone cadastrado.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    const celular = product.vendedor_celular.replace(/\D/g, '');
+    const mensagem = encodeURIComponent(
+      `Olá! Vi o produto *${product.nome}* no Xepa Social e gostaria de mais informações.`
+    );
+    const whatsappUrl = `https://wa.me/55${celular}?text=${mensagem}`;
+    window.open(whatsappUrl, '_blank');
   };
 
   const addToFavorites = async (productId: number) => {
@@ -179,11 +199,6 @@ const Index = () => {
         variant: "destructive",
       });
     }
-  };
-
-  const handleWhatsApp = (product: Product) => {
-    const message = encodeURIComponent(`Olá! Tenho interesse no produto: ${product.nome} - R$ ${product.preco}`);
-    window.open(`https://wa.me/?text=${message}`, "_blank");
   };
 
   return (
