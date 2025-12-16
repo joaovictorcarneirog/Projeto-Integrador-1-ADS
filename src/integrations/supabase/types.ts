@@ -267,6 +267,8 @@ export type Database = {
           horario_funcionamento: string | null
           id: string
           imagem_perfil: string | null
+          latitude: number | null
+          longitude: number | null
           nome: string
           preferencias_alimentares: string | null
           tipo_usuario: string
@@ -281,6 +283,8 @@ export type Database = {
           horario_funcionamento?: string | null
           id: string
           imagem_perfil?: string | null
+          latitude?: number | null
+          longitude?: number | null
           nome: string
           preferencias_alimentares?: string | null
           tipo_usuario: string
@@ -295,6 +299,8 @@ export type Database = {
           horario_funcionamento?: string | null
           id?: string
           imagem_perfil?: string | null
+          latitude?: number | null
+          longitude?: number | null
           nome?: string
           preferencias_alimentares?: string | null
           tipo_usuario?: string
