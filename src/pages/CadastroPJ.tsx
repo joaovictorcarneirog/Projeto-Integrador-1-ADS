@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
-import { ArrowLeft, Store } from "lucide-react";
+import { ArrowLeft, Store, MapPin } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { cadastroPJSchema } from "@/lib/validation";
 
@@ -20,10 +20,48 @@ const CadastroPJ = () => {
     celular: "",
     endereco: "",
     horario_funcionamento: "",
+    latitude: null as number | null,
+    longitude: null as number | null,
   });
   const [loading, setLoading] = useState(false);
+  const [loadingLocation, setLoadingLocation] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
+
+  const getLocation = () => {
+    if (!navigator.geolocation) {
+      toast({
+        title: "Erro",
+        description: "Geolocalização não suportada pelo navegador.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setLoadingLocation(true);
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        setFormData({
+          ...formData,
+          latitude: position.coords.latitude,
+          longitude: position.coords.longitude,
+        });
+        toast({
+          title: "Localização capturada!",
+          description: "Sua localização será exibida no mapa para compradores.",
+        });
+        setLoadingLocation(false);
+      },
+      (error) => {
+        toast({
+          title: "Erro ao obter localização",
+          description: "Permita o acesso à localização ou preencha manualmente.",
+          variant: "destructive",
+        });
+        setLoadingLocation(false);
+      }
+    );
+  };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -72,6 +110,8 @@ const CadastroPJ = () => {
             celular: formData.celular,
             endereco: formData.endereco,
             horario_funcionamento: formData.horario_funcionamento || undefined,
+            latitude: formData.latitude,
+            longitude: formData.longitude,
           },
           emailRedirectTo: `${window.location.origin}/`,
         },
@@ -135,6 +175,27 @@ const CadastroPJ = () => {
                     onChange={handleChange}
                     required
                   />
+                </div>
+
+                <div className="space-y-2">
+                  <Label>Localização para o Mapa</Label>
+                  <div className="flex gap-2">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={getLocation}
+                      disabled={loadingLocation}
+                      className="flex-1"
+                    >
+                      <MapPin className="h-4 w-4 mr-2" />
+                      {loadingLocation ? "Obtendo..." : formData.latitude ? "Localização OK" : "Capturar Localização"}
+                    </Button>
+                  </div>
+                  {formData.latitude && (
+                    <p className="text-xs text-muted-foreground">
+                      Lat: {formData.latitude.toFixed(6)}, Lng: {formData.longitude?.toFixed(6)}
+                    </p>
+                  )}
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">

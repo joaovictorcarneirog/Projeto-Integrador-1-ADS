@@ -4,10 +4,11 @@ import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
-import { Heart, ShoppingCart, Plus } from "lucide-react";
+import { Heart, ShoppingCart, Plus, MapPin } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import ProductMap from "@/components/ProductMap";
 
 interface Product {
   id: number;
@@ -19,6 +20,8 @@ interface Product {
   imagem: string | null;
   vendedor_nome?: string;
   vendedor_celular?: string;
+  latitude?: number;
+  longitude?: number;
 }
 
 const Index = () => {
@@ -54,7 +57,7 @@ const Index = () => {
         .from("produto")
         .select(`
           *,
-          profiles:fk_vendedor_id(nome, celular)
+          profiles:fk_vendedor_id(nome, celular, latitude, longitude)
         `)
         .order("created_at", { ascending: false });
 
@@ -73,6 +76,8 @@ const Index = () => {
           imagem: imagemUrl,
           vendedor_nome: p.profiles?.nome || "Vendedor Desconhecido",
           vendedor_celular: p.profiles?.celular || "",
+          latitude: p.profiles?.latitude,
+          longitude: p.profiles?.longitude,
         };
       }) || [];
 
@@ -266,6 +271,20 @@ const Index = () => {
 
           {/* Products Grid */}
           <div className={isVendedor ? "md:col-span-8" : "md:col-span-12"}>
+            {/* Map Section */}
+            {products.some(p => p.latitude && p.longitude) && (
+              <div className="mb-8">
+                <h3 className="text-2xl font-bold mb-4 flex items-center gap-2">
+                  <MapPin className="h-6 w-6 text-primary" />
+                  Localização dos Produtos
+                </h3>
+                <ProductMap 
+                  products={products} 
+                  className="h-[300px] md:h-[400px]" 
+                />
+              </div>
+            )}
+
             <h3 className="text-2xl font-bold mb-6 text-center">Produtos Disponíveis</h3>
             <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
               {products.map((product) => (
