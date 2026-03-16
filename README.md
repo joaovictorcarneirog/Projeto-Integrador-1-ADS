@@ -1,73 +1,31 @@
-# Welcome to your Lovable project
+Projeto Integrador 1 – ADS – Turma A – CEUB – 2026/1  
+Trabalho da Disciplina
 
-## Project info
+Projeto: Xepa Social
 
-**URL**: https://lovable.dev/projects/38dc586b-b47d-4848-8354-e332554bcda1
+Objetivos iniciais
+Desenvolver uma plataforma digital que ajude a reduzir o desperdício de alimentos, conectando estabelecimentos e pessoas que possuem alimentos excedentes com pessoas ou instituições que possam utilizá-los.
 
-## How can I edit this code?
+Descrição
+A Xepa Social é uma plataforma digital criada com o objetivo de combater o desperdício de comida e promover impacto social positivo. A aplicação permitirá que restaurantes, supermercados, padarias, feiras e até pessoas físicas disponibilizem alimentos que ainda estão próprios para consumo, mas que poderiam ser descartados.
 
-There are several ways of editing your application.
+A plataforma funcionará como um ponto de conexão entre quem tem alimentos disponíveis e quem precisa deles, facilitando a doação ou redistribuição desses alimentos de forma organizada e acessível.
 
-**Use Lovable**
+Com isso, o projeto busca gerar benefícios sociais, ambientais e econômicos, contribuindo para a diminuição do desperdício de alimentos e ajudando comunidades que enfrentam dificuldades de acesso à alimentação.
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/38dc586b-b47d-4848-8354-e332554bcda1) and start prompting.
+Funcionalidades iniciais previstas
+- Cadastro de usuários e estabelecimentos  
+- Publicação de alimentos disponíveis para doação ou retirada  
+- Sistema de localização para encontrar alimentos próximos  
+- Organização das ofertas de alimentos por categoria  
+- Registro de histórico de doações e retiradas  
 
-Changes made via Lovable will be committed automatically to this repo.
+Tecnologias previstas
+- Desenvolvimento Web (Front-end e Back-end)  
+- Banco de Dados para armazenamento das informações  
+- Plataforma digital acessível por navegador  
 
-**Use your preferred IDE**
+Integrantes do Projeto
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
-
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
-
-Follow these steps:
-
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
-
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
-```
-
-**Edit a file directly in GitHub**
-
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
-
-**Use GitHub Codespaces**
-
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
-
-## What technologies are used for this project?
-
-This project is built with:
-
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
-
-## How can I deploy this project?
-
-Simply open [Lovable](https://lovable.dev/projects/38dc586b-b47d-4848-8354-e332554bcda1) and click on Share -> Publish.
-
-## Can I connect a custom domain to my Lovable project?
-
-Yes, you can!
-
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
-
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+João Victor Carneiro Garcia  
+Dev Team – Front-end / Back-end / Banco de Dados
