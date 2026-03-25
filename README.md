@@ -6,14 +6,14 @@ Repositório destinado ao desenvolvimento da disciplina Análise e Projeto de Si
 
 | Documento | Descrição |
 | -- | -- |
-| [Lean Inception – Visão do Produto](docs/Lean_Inception_Xepa_Social.md) | Visão do produto, personas, jornadas, brainstorming, sequenciador e Canvas MVP |
-| [Documento de Visão](https://drive.google.com/drive/folders/1-C5IujFTdR4TxA5s533TNFzm0BeCHbeK?hl=pt-br) | Introdução, definição do problema, escopo e requisitos do sistema |
+| [Lean Inception – Visão do Produto](https://docs.google.com/document/d/1gDSI5glGLp_mUaclSvq_VMIZlFU1PN9rmtu778PkNdM/edit?tab=t.0#heading=h.irdwa84qqems) | Visão do produto, personas, jornadas, brainstorming, sequenciador e Canvas MVP |
+| [Documento de Visão](https://docs.google.com/document/d/1K0guKJY1q0GEVwKGpo2-4-vGvKkbv991/edit?usp=sharing&ouid=110395278362965235197&rtpof=true&sd=true) | Introdução, definição do problema, escopo e requisitos do sistema |
 
 ## Integrantes do Projeto
 
 | Matrícula | Aluno | Função |
 | -- | -- | -- |
-| joaozinhocg13.07@gmail.com | João Victor Carneiro Garcia | Dev Team – Front-end / Back-end / Banco de Dados |
+| 22453007| João Victor Carneiro Garcia | Dev Team – Front-end / Back-end / Banco de Dados |
 
 ## Tecnologias Utilizadas
 
