@@ -6,7 +6,7 @@ Repositório destinado ao desenvolvimento da disciplina Análise e Projeto de Si
 
 | Documento | Descrição |
 | -- | -- |
-| [Documento de Visão](https://docs.google.com/document/d/1gDSI5glGLp_mUaclSvq_VMIZlFU1PN9rmtu778PkNdM/edit?tab=t.0#heading=h.irdwa84qqems) | Introdução, definição do problema, escopo e requisitos do sistema |
+| [Documento de Visão](https://docs.google.com/document/d/1ggIw6JiNMD7iOD65pWj40k20B38rkU8s/edit?usp=sharing&rtpof=true&sd=true) | Introdução, definição do problema, escopo e requisitos do sistema |
 [Diagrama de Casos de Uso](https://docs.google.com/document/d/1EjwuWCcXG1nTOAdpsyJhNAD6FF4Wg91YIWEMGRgYDKs/edit?usp=sharing) | Usuário Cliente|
 [Especificação de Caso de Uso 1](https://docs.google.com/document/d/1hQqbSKAp9osbr30YyP1uZG17KIy4YSN65zeUIuiCOk4/edit?usp=sharing) | Rastreamento de Entrega do Produto|
 [Especificação de Caso de Uso 2](https://docs.google.com/document/d/1UH8uuu_uvGp0ztD5Mj_44jsKMzIsiumC_vpT852uqeQ/edit?usp=sharing) | Avaliação de Produto e/ou Vendedor|
