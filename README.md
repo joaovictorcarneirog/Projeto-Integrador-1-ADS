@@ -6,7 +6,8 @@ Repositório destinado ao desenvolvimento da disciplina Análise e Projeto de Si
 
 | Documento | Descrição |
 | -- | -- |
-| [Documento de Visão](https://docs.google.com/document/d/1ggIw6JiNMD7iOD65pWj40k20B38rkU8s/edit?usp=sharing&rtpof=true&sd=true) | Introdução, definição do problema, escopo e requisitos do sistema |
+| [Plano de Projeto](https://docs.google.com/document/d/1egheCMzbmKMUML6OrUPRNFb4SSIIRZq3/edit?usp=sharing&ouid=110515696099223942066&rtpof=true&sd=true) | Identificação do Projeto |
+[Documento de Visão](https://docs.google.com/document/d/1ggIw6JiNMD7iOD65pWj40k20B38rkU8s/edit?usp=sharing&rtpof=true&sd=true) | Introdução, definição do problema, escopo e requisitos do sistema |
 [MVP](https://canva.link/wgs7r8stpjbh5ra) | MVP Canvas — Xepa Social|
 [Diagrama de Casos de Uso](https://docs.google.com/document/d/1EjwuWCcXG1nTOAdpsyJhNAD6FF4Wg91YIWEMGRgYDKs/edit?usp=sharing) | Usuário Cliente|
 [Especificação de Caso de Uso 1](https://docs.google.com/document/d/1hQqbSKAp9osbr30YyP1uZG17KIy4YSN65zeUIuiCOk4/edit?usp=sharing) | Rastreamento de Entrega do Produto|
