@@ -15,7 +15,8 @@ Repositório destinado ao desenvolvimento da disciplina Análise e Projeto de Si
 [Modelo de dominio](https://docs.google.com/document/d/1eqxnJjlIQN2i9YH7ss9NjEe1WnCIDarWxhZryEWnLvA/edit?usp=sharing) | Diagrama que representa os conceitos principais do meu sistema|
 | [Lean Inception](https://docs.google.com/document/d/1K0guKJY1q0GEVwKGpo2-4-vGvKkbv991/edit?usp=sharing&ouid=110395278362965235197&rtpof=true&sd=true) | Visão do produto, personas, jornadas, brainstorming, sequenciador e Canvas MVP |
 | [Mapa da Empatia](https://canva.link/sv75irkmq4fsf6v) | Nome: Juliana Idade: 36 anos 
-| [Protótipo MVP](https://docs.google.com/document/d/1e4ODkEWc1Y2Awx6607ZL3TXBVQoI7dDB/edit?usp=sharing&ouid=110515696099223942066&rtpof=true&sd=true) | Nome: Juliana Idade: 36 anos 
+| [Protótipo MVP](https://docs.google.com/document/d/1e4ODkEWc1Y2Awx6607ZL3TXBVQoI7dDB/edit?usp=sharing&ouid=110515696099223942066&rtpof=true&sd=true) | Especificação e Registro das Telas do Sistema
+
 | [HMW](https://canva.link/d6h4a29rqtdm6vo) | How Might We
 | [Brainstorm](https://canva.link/tj8lzadfb4rqzo9) | Arsenal de Soluções 
 
