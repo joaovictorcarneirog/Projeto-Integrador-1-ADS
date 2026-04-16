@@ -1,4 +1,4 @@
-# Xepa Social - Projeto Integrador 1 – ADS – CEUB 2026/1
+# Xepa Social - Projeto Integrador – ADS – CEUB 2026/1
 
 Repositório destinado ao desenvolvimento da disciplina Análise e Projeto de Sistemas (APS) por meio do projeto **Xepa Social** — uma plataforma digital que conecta estabelecimentos com alimentos próximos ao vencimento a consumidores interessados, promovendo a redução do desperdício alimentar e a segurança alimentar.
 
