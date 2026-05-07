@@ -209,38 +209,66 @@ const Index = () => {
     <div className="min-h-screen flex flex-col bg-background">
       <Navbar />
 
-      {/* Hero Carousel */}
-      <section className="bg-secondary">
-        <Carousel className="w-full" opts={{ loop: true }}>
-          <CarouselContent>
-            <CarouselItem>
-              <div className="h-[250px] md:h-[380px] lg:h-[460px] bg-gradient-to-r from-primary to-accent flex items-center justify-center text-primary-foreground">
-                <div className="text-center px-4">
-                  <h2 className="text-3xl md:text-5xl font-bold mb-4">Ofertas Fresquinhas</h2>
-                  <p className="text-lg md:text-xl">Economize e ajude o meio ambiente</p>
-                </div>
+      {/* Hero — Impacto */}
+      <section className="bg-warm-grain border-b border-border">
+        <div className="container mx-auto px-4 py-16 md:py-24">
+          <div className="grid md:grid-cols-2 gap-12 items-center">
+            <div>
+              <span className="inline-flex items-center gap-2 text-xs uppercase tracking-[0.2em] text-accent font-semibold mb-5">
+                <Sprout className="h-4 w-4" /> Movimento Anti-Desperdício
+              </span>
+              <h1 className="text-5xl md:text-6xl lg:text-7xl leading-[1.05] mb-5">
+                Comida boa <span className="font-handwritten text-accent text-6xl md:text-7xl lg:text-8xl">não vira lixo.</span>
+              </h1>
+              <p className="text-lg text-muted-foreground mb-8 max-w-lg leading-relaxed">
+                Resgate alimentos prestes a vencer, doados por feirantes, padarias e vizinhos da sua região. Pague o que puder — ou nada.
+              </p>
+              <div className="flex flex-wrap gap-3">
+                <Link to="#produtos">
+                  <Button size="lg" className="rounded-full px-7">
+                    <HandHeart className="mr-2 h-5 w-5" /> Resgatar agora
+                  </Button>
+                </Link>
+                <Link to="/quem-somos">
+                  <Button size="lg" variant="outline" className="rounded-full px-7 border-foreground/20">
+                    Como funciona
+                  </Button>
+                </Link>
               </div>
-            </CarouselItem>
-            <CarouselItem>
-              <div className="h-[250px] md:h-[380px] lg:h-[460px] bg-gradient-to-r from-primary/90 to-accent/90 flex items-center justify-center text-primary-foreground">
-                <div className="text-center px-4">
-                  <h2 className="text-3xl md:text-5xl font-bold mb-4">Economize sem Desperdiçar</h2>
-                  <p className="text-lg md:text-xl">Produtos de qualidade por preços acessíveis</p>
-                </div>
+            </div>
+
+            {/* Impact stats card */}
+            <div className="relative">
+              <div className="absolute -top-6 -left-4 font-handwritten text-accent text-2xl rotate-[-6deg]">
+                nosso impacto ✦
               </div>
-            </CarouselItem>
-            <CarouselItem>
-              <div className="h-[250px] md:h-[380px] lg:h-[460px] bg-gradient-to-r from-primary/80 to-accent/80 flex items-center justify-center text-primary-foreground">
-                <div className="text-center px-4">
-                  <h2 className="text-3xl md:text-5xl font-bold mb-4">Sabor e Sustentabilidade</h2>
-                  <p className="text-lg md:text-xl">Faça parte dessa mudança</p>
-                </div>
-              </div>
-            </CarouselItem>
-          </CarouselContent>
-          <CarouselPrevious className="left-4" />
-          <CarouselNext className="right-4" />
-        </Carousel>
+              <Card className="bg-card border-2 border-foreground/10 shadow-xl rounded-2xl overflow-hidden">
+                <CardContent className="p-8 grid grid-cols-2 gap-6">
+                  <div>
+                    <Apple className="h-8 w-8 text-accent mb-3" />
+                    <p className="text-4xl font-bold text-foreground">{Math.max(products.length * 12, 0)}<span className="text-lg text-muted-foreground"> kg</span></p>
+                    <p className="text-xs uppercase tracking-wider text-muted-foreground mt-1">Alimento salvo</p>
+                  </div>
+                  <div>
+                    <Users className="h-8 w-8 text-primary mb-3" />
+                    <p className="text-4xl font-bold text-foreground">{products.length * 3}</p>
+                    <p className="text-xs uppercase tracking-wider text-muted-foreground mt-1">Refeições doadas</p>
+                  </div>
+                  <div>
+                    <Sprout className="h-8 w-8 text-primary mb-3" />
+                    <p className="text-4xl font-bold text-foreground">{(products.length * 2.5).toFixed(0)}<span className="text-lg text-muted-foreground"> kg</span></p>
+                    <p className="text-xs uppercase tracking-wider text-muted-foreground mt-1">CO₂ evitado</p>
+                  </div>
+                  <div>
+                    <HandHeart className="h-8 w-8 text-accent mb-3" />
+                    <p className="text-4xl font-bold text-foreground">{products.length}</p>
+                    <p className="text-xs uppercase tracking-wider text-muted-foreground mt-1">Itens disponíveis</p>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          </div>
+        </div>
       </section>
 
       {/* Main Content */}
