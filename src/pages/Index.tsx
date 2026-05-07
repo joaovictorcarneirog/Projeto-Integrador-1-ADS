@@ -383,12 +383,12 @@ const Index = () => {
                 </Card>
                 );
               })}
-              ))}
             </div>
 
             {products.length === 0 && (
-              <div className="text-center py-12">
-                <p className="text-muted-foreground text-lg">Nenhum produto disponível no momento.</p>
+              <div className="text-center py-16">
+                <Sprout className="h-12 w-12 text-muted-foreground mx-auto mb-3 opacity-50" />
+                <p className="text-muted-foreground text-lg">Ainda não há itens para resgatar. Volte em breve!</p>
               </div>
             )}
           </div>
