@@ -3,11 +3,14 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Heart, ShoppingBasket, Plus, MapPin, Sprout, Users, Apple, HandHeart } from "lucide-react";
+import { Heart, ShoppingBasket, Plus, MapPin, Sprout, Users, Apple, HandHeart, Search, MessageCircle, Quote } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import ProductMap from "@/components/ProductMap";
+import heroDoacao from "@/assets/hero-doacao.jpg";
+import alimentosResgatados from "@/assets/alimentos-resgatados.jpg";
+import comunidadeFeira from "@/assets/comunidade-feira.jpg";
 
 interface Product {
   id: number;
