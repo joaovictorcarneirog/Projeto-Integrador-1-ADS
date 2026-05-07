@@ -272,23 +272,26 @@ const Index = () => {
       </section>
 
       {/* Main Content */}
-      <main className="container mx-auto px-4 py-8 flex-1">
+      <main id="produtos" className="container mx-auto px-4 py-12 flex-1">
         <div className="grid md:grid-cols-12 gap-6">
-          {/* Sidebar - Add Product (Vendors Only) */}
+          {/* Sidebar - Doador */}
           {isVendedor && (
             <div className="md:col-span-4">
-              <Card className="sticky top-20">
+              <Card className="sticky top-20 border-2 border-foreground/10 rounded-2xl">
                 <CardContent className="p-6 space-y-3">
-                  <h3 className="text-xl font-bold mb-4 text-center">Painel do Vendedor</h3>
+                  <h3 className="text-xl font-bold mb-1 text-center">Painel do Doador</h3>
+                  <p className="text-xs text-center text-muted-foreground mb-4 font-handwritten text-base">
+                    cada item conta ✦
+                  </p>
                   <Link to="/cadastrar-produto">
-                    <Button className="w-full" size="lg">
+                    <Button className="w-full rounded-full" size="lg">
                       <Plus className="mr-2 h-5 w-5" />
-                      Adicionar Produto
+                      Doar / Ofertar item
                     </Button>
                   </Link>
                   <Link to="/meus-produtos">
-                    <Button className="w-full" variant="outline" size="lg">
-                      Ver Meus Produtos
+                    <Button className="w-full rounded-full" variant="outline" size="lg">
+                      Meus itens ofertados
                     </Button>
                   </Link>
                 </CardContent>
@@ -300,54 +303,63 @@ const Index = () => {
           <div className={isVendedor ? "md:col-span-8" : "md:col-span-12"}>
             {/* Map Section */}
             {products.some(p => p.latitude && p.longitude) && (
-              <div className="mb-8">
-                <h3 className="text-2xl font-bold mb-4 flex items-center gap-2">
-                  <MapPin className="h-6 w-6 text-primary" />
-                  Localização dos Produtos
+              <div className="mb-10">
+                <h3 className="text-3xl mb-4 flex items-center gap-2">
+                  <MapPin className="h-7 w-7 text-accent" />
+                  Onde resgatar perto de você
                 </h3>
-                <ProductMap 
-                  products={products} 
-                  className="h-[300px] md:h-[400px]" 
-                />
+                <div className="rounded-2xl overflow-hidden border-2 border-foreground/10">
+                  <ProductMap
+                    products={products}
+                    className="h-[300px] md:h-[400px]"
+                  />
+                </div>
               </div>
             )}
 
-            <h3 className="text-2xl font-bold mb-6 text-center">Produtos Disponíveis</h3>
+            <div className="text-center mb-8">
+              <span className="font-handwritten text-2xl text-accent">disponíveis agora</span>
+              <h3 className="text-3xl md:text-4xl">Resgate antes que vire desperdício</h3>
+            </div>
             <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-              {products.map((product) => (
-                <Card key={product.id} className="overflow-hidden hover:shadow-lg transition-shadow">
-                  <div className="aspect-video relative">
+              {products.map((product) => {
+                const isDoacao = product.preco === "0.00" || product.preco === "0";
+                return (
+                <Card key={product.id} className="overflow-hidden hover:shadow-xl transition-all rounded-2xl border-2 border-foreground/5 group">
+                  <div className="aspect-video relative overflow-hidden">
                     <img
                       src={product.imagem || "https://images.unsplash.com/photo-1506617564039-2f3b650b7b66?w=400"}
                       alt={product.nome}
-                      className="w-full h-full object-cover"
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                     />
+                    {isDoacao && (
+                      <span className="absolute top-3 left-3 bg-accent text-accent-foreground text-xs font-bold uppercase tracking-wider px-3 py-1 rounded-full shadow-md flex items-center gap-1">
+                        <HandHeart className="h-3 w-3" /> Doação
+                      </span>
+                    )}
                   </div>
-                  <CardContent className="p-4">
-                    <div className="flex items-start justify-between gap-2 mb-2">
-                      <h4 className="font-semibold text-lg flex-1">{product.nome}</h4>
+                  <CardContent className="p-5">
+                    <h4 className="font-bold text-xl mb-1 leading-tight">{product.nome}</h4>
+                    <p className="text-xs text-muted-foreground mb-3">
+                      por <span className="font-semibold text-foreground">{product.vendedor_nome}</span>
+                    </p>
+                    <p className={`text-2xl font-bold mb-3 ${isDoacao ? 'text-accent font-handwritten text-3xl' : 'text-primary'}`}>
+                      {isDoacao ? "Grátis ✦" : `R$ ${product.preco}`}
+                    </p>
+                    <div className="flex items-center gap-3 text-xs text-muted-foreground mb-3 pb-3 border-b border-border">
+                      <span>Vence em {new Date(product.data_vencimento).toLocaleDateString("pt-BR")}</span>
+                      <span>•</span>
+                      <span>{product.quantidade} disponível</span>
                     </div>
-                    <p className="text-xs text-muted-foreground mb-2 flex items-center gap-1">
-                      <span className="font-medium">Por:</span> {product.vendedor_nome}
-                    </p>
-                    <p className="text-2xl font-bold text-primary mb-2">
-                      {product.preco === "0.00" || product.preco === "0" ? "Grátis" : `R$ ${product.preco}`}
-                    </p>
-                    <p className="text-sm text-muted-foreground mb-1">
-                      <strong>Validade:</strong>{" "}
-                      {new Date(product.data_vencimento).toLocaleDateString("pt-BR")}
-                    </p>
-                    <p className="text-sm text-muted-foreground mb-3">
-                      <strong>Quantidade:</strong> {product.quantidade}
-                    </p>
-                    <p className="text-sm mb-4 line-clamp-2">{product.descricao}</p>
-                    
+                    <p className="text-sm mb-4 line-clamp-2 text-muted-foreground">{product.descricao}</p>
+
                     <div className="flex gap-2">
                       <Button
                         variant="outline"
                         size="icon"
                         onClick={() => addToFavorites(product.id)}
-                        title="Adicionar aos favoritos"
+                        title="Salvar"
+                        className="rounded-full"
                       >
                         <Heart className="h-4 w-4" />
                       </Button>
@@ -355,19 +367,22 @@ const Index = () => {
                         variant="outline"
                         size="icon"
                         onClick={() => addToCart(product.id, product.preco)}
-                        title="Adicionar ao carrinho"
+                        title="Adicionar à sacola"
+                        className="rounded-full"
                       >
-                        <ShoppingCart className="h-4 w-4" />
+                        <ShoppingBasket className="h-4 w-4" />
                       </Button>
                       <Button
-                        className="flex-1"
+                        className="flex-1 rounded-full"
                         onClick={() => handleWhatsApp(product)}
                       >
-                        Falar com Vendedor
+                        {isDoacao ? "Resgatar" : "Combinar"}
                       </Button>
                     </div>
                   </CardContent>
                 </Card>
+                );
+              })}
               ))}
             </div>
 
