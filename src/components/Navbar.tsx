@@ -55,32 +55,32 @@ const Navbar = () => {
 
   const NavLinks = () => (
     <>
-      <Link to="/quem-somos" className="text-sm hover:text-accent transition-colors">
-        Quem Somos?
+      <Link to="/quem-somos" className="text-sm hover:text-highlight transition-colors">
+        Nossa Causa
       </Link>
-      <Link to="/contato" className="text-sm hover:text-accent transition-colors">
+      <Link to="/contato" className="text-sm hover:text-highlight transition-colors">
         Contato
       </Link>
       {isLoggedIn ? (
         <>
-          <Link to="/perfil" className="text-sm hover:text-accent transition-colors flex items-center gap-1">
+          <Link to="/perfil" className="text-sm hover:text-highlight transition-colors flex items-center gap-1">
             <User className="h-4 w-4" />
             Perfil
           </Link>
-          <Link to="/favoritos" className="text-sm hover:text-accent transition-colors flex items-center gap-1">
+          <Link to="/favoritos" className="text-sm hover:text-highlight transition-colors flex items-center gap-1">
             <Heart className="h-4 w-4" />
-            Favoritos
+            Salvos
           </Link>
-          <Link to="/carrinho" className="text-sm hover:text-accent transition-colors flex items-center gap-1">
+          <Link to="/carrinho" className="text-sm hover:text-highlight transition-colors flex items-center gap-1">
             <ShoppingCart className="h-4 w-4" />
-            Carrinho
+            Sacola Solidária
           </Link>
-          <button onClick={handleLogout} className="text-sm hover:text-accent transition-colors">
+          <button onClick={handleLogout} className="text-sm hover:text-highlight transition-colors">
             Sair
           </button>
         </>
       ) : (
-        <Link to="/login" className="text-sm hover:text-accent transition-colors">
+        <Link to="/login" className="text-sm hover:text-highlight transition-colors">
           Entrar
         </Link>
       )}
@@ -91,8 +91,9 @@ const Navbar = () => {
     <nav className="bg-primary text-primary-foreground shadow-md sticky top-0 z-50">
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-16">
-          <Link to="/" className="text-xl font-bold">
-            Xepa Social
+          <Link to="/" className="flex items-center gap-2">
+            <span className="text-2xl font-handwritten leading-none">Xepa</span>
+            <span className="text-xs uppercase tracking-widest opacity-80">Social</span>
           </Link>
 
           {/* Desktop Navigation */}

@@ -1,105 +1,89 @@
-@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700;9..144,800&family=Nunito:wght@400;500;600;700;800&family=Caveat:wght@500;700&display=swap');
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
-All colors MUST be HSL.
-*/
+/* Xepa Social — Community / Anti-waste palette
+   Warm, earthy, inviting. Less e-commerce, more community kitchen / farmers market. */
 
 @layer base {
   :root {
-    /* Xepa Social - Green Theme (#4CAF50) */
-    --background: 0 0% 100%;
-    --foreground: 0 0% 20%;
+    /* Warm cream background, deep cocoa text */
+    --background: 40 35% 96%;
+    --foreground: 25 30% 18%;
 
-    --card: 0 0% 100%;
-    --card-foreground: 0 0% 20%;
+    --card: 40 40% 99%;
+    --card-foreground: 25 30% 18%;
 
-    --popover: 0 0% 100%;
-    --popover-foreground: 0 0% 20%;
+    --popover: 40 40% 99%;
+    --popover-foreground: 25 30% 18%;
 
-    --primary: 122 39% 49%;
-    --primary-foreground: 0 0% 100%;
+    /* Deep leaf green — grounded, not pharmacy bright */
+    --primary: 95 35% 32%;
+    --primary-foreground: 40 40% 98%;
 
-    --secondary: 0 0% 96%;
-    --secondary-foreground: 0 0% 20%;
+    /* Soft beige */
+    --secondary: 38 30% 90%;
+    --secondary-foreground: 25 30% 18%;
 
-    --muted: 0 0% 96%;
-    --muted-foreground: 0 0% 45%;
+    --muted: 38 25% 92%;
+    --muted-foreground: 25 15% 40%;
 
-    --accent: 122 39% 49%;
-    --accent-foreground: 0 0% 100%;
+    /* Terracotta accent — for donations, urgency, warmth */
+    --accent: 15 65% 55%;
+    --accent-foreground: 40 40% 98%;
 
-    --destructive: 0 84% 60%;
-    --destructive-foreground: 0 0% 98%;
+    /* Mustard for impact/highlight */
+    --highlight: 38 80% 55%;
+    --highlight-foreground: 25 30% 18%;
 
-    --border: 0 0% 90%;
-    --input: 0 0% 90%;
-    --ring: 122 39% 49%;
+    --destructive: 5 70% 50%;
+    --destructive-foreground: 40 40% 98%;
 
-    --success: 122 39% 49%;
-    --success-foreground: 0 0% 100%;
+    --border: 35 20% 85%;
+    --input: 35 20% 85%;
+    --ring: 95 35% 32%;
 
-    --radius: 0.5rem;
+    --success: 95 35% 32%;
+    --success-foreground: 40 40% 98%;
 
-    --sidebar-background: 0 0% 98%;
+    --radius: 0.75rem;
 
-    --sidebar-foreground: 240 5.3% 26.1%;
-
-    --sidebar-primary: 240 5.9% 10%;
-
-    --sidebar-primary-foreground: 0 0% 98%;
-
-    --sidebar-accent: 240 4.8% 95.9%;
-
-    --sidebar-accent-foreground: 240 5.9% 10%;
-
-    --sidebar-border: 220 13% 91%;
-
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    --sidebar-background: 40 35% 96%;
+    --sidebar-foreground: 25 30% 18%;
+    --sidebar-primary: 95 35% 32%;
+    --sidebar-primary-foreground: 40 40% 98%;
+    --sidebar-accent: 38 30% 90%;
+    --sidebar-accent-foreground: 25 30% 18%;
+    --sidebar-border: 35 20% 85%;
+    --sidebar-ring: 95 35% 32%;
   }
 
   .dark {
-    --background: 0 0% 13%;
-    --foreground: 0 0% 95%;
-
-    --card: 0 0% 16%;
-    --card-foreground: 0 0% 95%;
-
-    --popover: 0 0% 9%;
-    --popover-foreground: 0 0% 95%;
-
-    --primary: 122 39% 49%;
-    --primary-foreground: 0 0% 100%;
-
-    --secondary: 0 0% 20%;
-    --secondary-foreground: 0 0% 98%;
-
-    --muted: 0 0% 20%;
-    --muted-foreground: 0 0% 65%;
-
-    --accent: 122 39% 49%;
-    --accent-foreground: 0 0% 100%;
-
-    --destructive: 0 63% 31%;
-    --destructive-foreground: 0 86% 97%;
-
-    --border: 0 0% 20%;
-    --input: 0 0% 20%;
-    --ring: 122 39% 49%;
-
-    --success: 122 39% 49%;
-    --success-foreground: 0 0% 100%;
-    --sidebar-background: 240 5.9% 10%;
-    --sidebar-foreground: 240 4.8% 95.9%;
-    --sidebar-primary: 224.3 76.3% 48%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 240 3.7% 15.9%;
-    --sidebar-accent-foreground: 240 4.8% 95.9%;
-    --sidebar-border: 240 3.7% 15.9%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    --background: 25 20% 12%;
+    --foreground: 40 30% 94%;
+    --card: 25 18% 16%;
+    --card-foreground: 40 30% 94%;
+    --popover: 25 18% 14%;
+    --popover-foreground: 40 30% 94%;
+    --primary: 95 40% 55%;
+    --primary-foreground: 25 25% 12%;
+    --secondary: 25 15% 22%;
+    --secondary-foreground: 40 30% 94%;
+    --muted: 25 15% 22%;
+    --muted-foreground: 40 15% 65%;
+    --accent: 15 65% 60%;
+    --accent-foreground: 25 25% 12%;
+    --highlight: 38 75% 60%;
+    --highlight-foreground: 25 25% 12%;
+    --destructive: 5 60% 45%;
+    --destructive-foreground: 40 30% 94%;
+    --border: 25 15% 25%;
+    --input: 25 15% 25%;
+    --ring: 95 40% 55%;
+    --success: 95 40% 55%;
+    --success-foreground: 25 25% 12%;
   }
 }
 
@@ -110,6 +94,25 @@ All colors MUST be HSL.
 
   body {
     @apply bg-background text-foreground;
-    font-family: 'Montserrat', sans-serif;
+    font-family: 'Nunito', sans-serif;
+  }
+
+  h1, h2, h3, h4 {
+    font-family: 'Fraunces', serif;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+  }
+
+  .font-handwritten {
+    font-family: 'Caveat', cursive;
+  }
+}
+
+@layer utilities {
+  .bg-warm-grain {
+    background-color: hsl(var(--background));
+    background-image:
+      radial-gradient(circle at 20% 10%, hsl(var(--accent) / 0.08), transparent 40%),
+      radial-gradient(circle at 80% 80%, hsl(var(--primary) / 0.08), transparent 45%);
   }
 }
