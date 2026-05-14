@@ -3,11 +3,12 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Heart, ShoppingBasket, Plus, MapPin, Sprout, Users, Apple, HandHeart, Search, MessageCircle, Quote } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Heart, ShoppingBasket, Plus, MapPin, Sprout, Apple, HandHeart, Search, MessageCircle, Quote } from "lucide-react";
+import { Link, useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import ProductMap from "@/components/ProductMap";
+import { useUserRole } from "@/hooks/useUserRole";
 import heroDoacao from "@/assets/hero-doacao.jpg";
 import alimentosResgatados from "@/assets/alimentos-resgatados.jpg";
 import comunidadeFeira from "@/assets/comunidade-feira.jpg";
@@ -20,37 +21,41 @@ interface Product {
   data_vencimento: string;
   quantidade: number;
   imagem: string | null;
+  fk_tipo_produto_id?: number | null;
   vendedor_nome?: string;
   vendedor_celular?: string;
   latitude?: number;
   longitude?: number;
 }
 
+interface Categoria {
+  id: number;
+  nome: string;
+}
+
 const Index = () => {
   const [products, setProducts] = useState<Product[]>([]);
-  const [isVendedor, setIsVendedor] = useState(false);
-  const [userId, setUserId] = useState<string | null>(null);
+  const [categorias, setCategorias] = useState<Categoria[]>([]);
+  const [activeCat, setActiveCat] = useState<number | "all" | "doacao">("all");
+  const { role, userId, loading: roleLoading } = useUserRole();
+  const navigate = useNavigate();
   const { toast } = useToast();
 
   useEffect(() => {
-    checkUser();
     fetchProducts();
+    fetchCategorias();
   }, []);
 
-  const checkUser = async () => {
-    const { data: { session } } = await supabase.auth.getSession();
-    if (session?.user) {
-      setUserId(session.user.id);
-      
-      // Buscar perfil do usuário
-      const { data: profile } = await supabase
-        .from("profiles")
-        .select("tipo_usuario")
-        .eq("id", session.user.id)
-        .single();
-      
-      setIsVendedor(profile?.tipo_usuario === "vendedor");
-    }
+  // Redirect roles to their own surfaces
+  useEffect(() => {
+    if (roleLoading) return;
+    if (role === "admin") navigate("/admin", { replace: true });
+    else if (role === "vendedor") navigate("/painel-doador", { replace: true });
+  }, [role, roleLoading, navigate]);
+
+  const fetchCategorias = async () => {
+    const { data } = await supabase.from("tipo_produto").select("id, nome").order("nome");
+    setCategorias(data || []);
   };
 
   const fetchProducts = async () => {
@@ -59,29 +64,29 @@ const Index = () => {
         .from("produto")
         .select(`
           *,
-          profiles:fk_vendedor_id(nome, celular, latitude, longitude)
+          profiles:fk_vendedor_id(nome, celular, latitude, longitude, validation_status)
         `)
         .order("created_at", { ascending: false });
 
       if (error) throw error;
 
-      const productsWithImage = data?.map((p: any) => {
-        // Converter BYTEA para string se necessário
-        let imagemUrl = p.imagem;
-        if (p.imagem && typeof p.imagem === 'object' && p.imagem.data) {
-          // É um Buffer/BYTEA, converter para string
-          imagemUrl = String.fromCharCode(...p.imagem.data);
-        }
-        
-        return {
-          ...p,
-          imagem: imagemUrl,
-          vendedor_nome: p.profiles?.nome || "Vendedor Desconhecido",
-          vendedor_celular: p.profiles?.celular || "",
-          latitude: p.profiles?.latitude,
-          longitude: p.profiles?.longitude,
-        };
-      }) || [];
+      const productsWithImage = (data || [])
+        // só itens de doadores aprovados
+        .filter((p: any) => !p.profiles || p.profiles.validation_status === "aprovado")
+        .map((p: any) => {
+          let imagemUrl = p.imagem;
+          if (p.imagem && typeof p.imagem === "object" && p.imagem.data) {
+            imagemUrl = String.fromCharCode(...p.imagem.data);
+          }
+          return {
+            ...p,
+            imagem: imagemUrl,
+            vendedor_nome: p.profiles?.nome || "Doador",
+            vendedor_celular: p.profiles?.celular || "",
+            latitude: p.profiles?.latitude,
+            longitude: p.profiles?.longitude,
+          };
+        });
 
       setProducts(productsWithImage);
     } catch (error) {
@@ -372,57 +377,66 @@ const Index = () => {
 
       {/* Main Content */}
       <main id="produtos" className="container mx-auto px-4 py-12 flex-1">
-        <div className="grid md:grid-cols-12 gap-6">
-          {/* Sidebar - Doador */}
-          {isVendedor && (
-            <div className="md:col-span-4">
-              <Card className="sticky top-20 border-2 border-foreground/10 rounded-2xl">
-                <CardContent className="p-6 space-y-3">
-                  <h3 className="text-xl font-bold mb-1 text-center">Painel do Doador</h3>
-                  <p className="text-xs text-center text-muted-foreground mb-4 font-handwritten text-base">
-                    cada item conta ✦
-                  </p>
-                  <Link to="/cadastrar-produto">
-                    <Button className="w-full rounded-full" size="lg">
-                      <Plus className="mr-2 h-5 w-5" />
-                      Doar / Ofertar item
-                    </Button>
-                  </Link>
-                  <Link to="/meus-produtos">
-                    <Button className="w-full rounded-full" variant="outline" size="lg">
-                      Meus itens ofertados
-                    </Button>
-                  </Link>
-                </CardContent>
-              </Card>
+        <div>
+          {/* Map Section */}
+          {products.some(p => p.latitude && p.longitude) && (
+            <div className="mb-10">
+              <h3 className="text-3xl mb-4 flex items-center gap-2">
+                <MapPin className="h-7 w-7 text-accent" />
+                Onde resgatar perto de você
+              </h3>
+              <div className="rounded-2xl overflow-hidden border-2 border-foreground/10">
+                <ProductMap
+                  products={products}
+                  className="h-[300px] md:h-[400px]"
+                />
+              </div>
             </div>
           )}
 
-          {/* Products Grid */}
-          <div className={isVendedor ? "md:col-span-8" : "md:col-span-12"}>
-            {/* Map Section */}
-            {products.some(p => p.latitude && p.longitude) && (
-              <div className="mb-10">
-                <h3 className="text-3xl mb-4 flex items-center gap-2">
-                  <MapPin className="h-7 w-7 text-accent" />
-                  Onde resgatar perto de você
-                </h3>
-                <div className="rounded-2xl overflow-hidden border-2 border-foreground/10">
-                  <ProductMap
-                    products={products}
-                    className="h-[300px] md:h-[400px]"
-                  />
-                </div>
-              </div>
-            )}
+          <div className="text-center mb-6">
+            <span className="font-handwritten text-2xl text-accent">o que você precisa hoje?</span>
+            <h3 className="text-3xl md:text-4xl">Catálogo por categoria</h3>
+          </div>
 
-            <div className="text-center mb-8">
-              <span className="font-handwritten text-2xl text-accent">disponíveis agora</span>
-              <h3 className="text-3xl md:text-4xl">Resgate antes que vire desperdício</h3>
-            </div>
-            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-              {products.map((product) => {
-                const isDoacao = product.preco === "0.00" || product.preco === "0";
+          {/* Filtros por categoria */}
+          <div className="flex flex-wrap justify-center gap-2 mb-10">
+            <Button
+              variant={activeCat === "all" ? "default" : "outline"}
+              className="rounded-full"
+              onClick={() => setActiveCat("all")}
+            >
+              <Apple className="mr-2 h-4 w-4" /> Tudo
+            </Button>
+            <Button
+              variant={activeCat === "doacao" ? "default" : "outline"}
+              className="rounded-full"
+              onClick={() => setActiveCat("doacao")}
+            >
+              <HandHeart className="mr-2 h-4 w-4" /> Só doações grátis
+            </Button>
+            {categorias.map((c) => (
+              <Button
+                key={c.id}
+                variant={activeCat === c.id ? "default" : "outline"}
+                className="rounded-full"
+                onClick={() => setActiveCat(c.id)}
+              >
+                {c.nome}
+              </Button>
+            ))}
+          </div>
+
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {products
+              .filter((product) => {
+                const isDoacao = Number(product.preco) === 0;
+                if (activeCat === "all") return true;
+                if (activeCat === "doacao") return isDoacao;
+                return product.fk_tipo_produto_id === activeCat;
+              })
+              .map((product) => {
+                const isDoacao = Number(product.preco) === 0;
                 return (
                 <Card key={product.id} className="overflow-hidden hover:shadow-xl transition-all rounded-2xl border-2 border-foreground/5 group">
                   <div className="aspect-video relative overflow-hidden">
@@ -482,15 +496,14 @@ const Index = () => {
                 </Card>
                 );
               })}
-            </div>
-
-            {products.length === 0 && (
-              <div className="text-center py-16">
-                <Sprout className="h-12 w-12 text-muted-foreground mx-auto mb-3 opacity-50" />
-                <p className="text-muted-foreground text-lg">Ainda não há itens para resgatar. Volte em breve!</p>
-              </div>
-            )}
           </div>
+
+          {products.length === 0 && (
+            <div className="text-center py-16">
+              <Sprout className="h-12 w-12 text-muted-foreground mx-auto mb-3 opacity-50" />
+              <p className="text-muted-foreground text-lg">Ainda não há itens para resgatar. Volte em breve!</p>
+            </div>
+          )}
         </div>
       </main>
 
