@@ -271,7 +271,11 @@ export type Database = {
           longitude: number | null
           nome: string
           preferencias_alimentares: string | null
+          rejection_reason: string | null
           tipo_usuario: string
+          validated_at: string | null
+          validated_by: string | null
+          validation_status: string
         }
         Insert: {
           celular?: string | null
@@ -287,7 +291,11 @@ export type Database = {
           longitude?: number | null
           nome: string
           preferencias_alimentares?: string | null
+          rejection_reason?: string | null
           tipo_usuario: string
+          validated_at?: string | null
+          validated_by?: string | null
+          validation_status?: string
         }
         Update: {
           celular?: string | null
@@ -303,7 +311,11 @@ export type Database = {
           longitude?: number | null
           nome?: string
           preferencias_alimentares?: string | null
+          rejection_reason?: string | null
           tipo_usuario?: string
+          validated_at?: string | null
+          validated_by?: string | null
+          validation_status?: string
         }
         Relationships: []
       }
@@ -393,6 +405,42 @@ export type Database = {
           created_at?: string | null
           id?: string
           role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
+      vendor_documents: {
+        Row: {
+          created_at: string
+          doc_type: string
+          file_path: string
+          id: string
+          rejection_reason: string | null
+          reviewed_at: string | null
+          reviewed_by: string | null
+          status: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          doc_type: string
+          file_path: string
+          id?: string
+          rejection_reason?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          doc_type?: string
+          file_path?: string
+          id?: string
+          rejection_reason?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: string
           user_id?: string
         }
         Relationships: []
