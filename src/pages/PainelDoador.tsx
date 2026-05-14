@@ -205,7 +205,7 @@ const PainelDoador = () => {
             ) : (
               <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
                 {produtos.map((p) => {
-                  const isDoacao = p.preco === "0.00" || p.preco === "0";
+                  const isDoacao = Number(p.preco) === 0;
                   return (
                     <Card key={p.id} className="overflow-hidden border-2 border-foreground/5 rounded-2xl">
                       <div className="aspect-video bg-muted">
