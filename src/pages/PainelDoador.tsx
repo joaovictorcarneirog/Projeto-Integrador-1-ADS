@@ -16,7 +16,7 @@ import { useToast } from "@/hooks/use-toast";
 interface Produto {
   id: number;
   nome: string;
-  preco: string;
+  preco: number | string;
   quantidade: number;
   data_vencimento: string;
   imagem: string | null;
