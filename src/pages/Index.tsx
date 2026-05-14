@@ -21,37 +21,41 @@ interface Product {
   data_vencimento: string;
   quantidade: number;
   imagem: string | null;
+  fk_tipo_produto_id?: number | null;
   vendedor_nome?: string;
   vendedor_celular?: string;
   latitude?: number;
   longitude?: number;
 }
 
+interface Categoria {
+  id: number;
+  nome: string;
+}
+
 const Index = () => {
   const [products, setProducts] = useState<Product[]>([]);
-  const [isVendedor, setIsVendedor] = useState(false);
-  const [userId, setUserId] = useState<string | null>(null);
+  const [categorias, setCategorias] = useState<Categoria[]>([]);
+  const [activeCat, setActiveCat] = useState<number | "all" | "doacao">("all");
+  const { role, userId, loading: roleLoading } = useUserRole();
+  const navigate = useNavigate();
   const { toast } = useToast();
 
   useEffect(() => {
-    checkUser();
     fetchProducts();
+    fetchCategorias();
   }, []);
 
-  const checkUser = async () => {
-    const { data: { session } } = await supabase.auth.getSession();
-    if (session?.user) {
-      setUserId(session.user.id);
-      
-      // Buscar perfil do usuário
-      const { data: profile } = await supabase
-        .from("profiles")
-        .select("tipo_usuario")
-        .eq("id", session.user.id)
-        .single();
-      
-      setIsVendedor(profile?.tipo_usuario === "vendedor");
-    }
+  // Redirect roles to their own surfaces
+  useEffect(() => {
+    if (roleLoading) return;
+    if (role === "admin") navigate("/admin", { replace: true });
+    else if (role === "vendedor") navigate("/painel-doador", { replace: true });
+  }, [role, roleLoading, navigate]);
+
+  const fetchCategorias = async () => {
+    const { data } = await supabase.from("tipo_produto").select("id, nome").order("nome");
+    setCategorias(data || []);
   };
 
   const fetchProducts = async () => {
@@ -60,29 +64,29 @@ const Index = () => {
         .from("produto")
         .select(`
           *,
-          profiles:fk_vendedor_id(nome, celular, latitude, longitude)
+          profiles:fk_vendedor_id(nome, celular, latitude, longitude, validation_status)
         `)
         .order("created_at", { ascending: false });
 
       if (error) throw error;
 
-      const productsWithImage = data?.map((p: any) => {
-        // Converter BYTEA para string se necessário
-        let imagemUrl = p.imagem;
-        if (p.imagem && typeof p.imagem === 'object' && p.imagem.data) {
-          // É um Buffer/BYTEA, converter para string
-          imagemUrl = String.fromCharCode(...p.imagem.data);
-        }
-        
-        return {
-          ...p,
-          imagem: imagemUrl,
-          vendedor_nome: p.profiles?.nome || "Vendedor Desconhecido",
-          vendedor_celular: p.profiles?.celular || "",
-          latitude: p.profiles?.latitude,
-          longitude: p.profiles?.longitude,
-        };
-      }) || [];
+      const productsWithImage = (data || [])
+        // só itens de doadores aprovados
+        .filter((p: any) => !p.profiles || p.profiles.validation_status === "aprovado")
+        .map((p: any) => {
+          let imagemUrl = p.imagem;
+          if (p.imagem && typeof p.imagem === "object" && p.imagem.data) {
+            imagemUrl = String.fromCharCode(...p.imagem.data);
+          }
+          return {
+            ...p,
+            imagem: imagemUrl,
+            vendedor_nome: p.profiles?.nome || "Doador",
+            vendedor_celular: p.profiles?.celular || "",
+            latitude: p.profiles?.latitude,
+            longitude: p.profiles?.longitude,
+          };
+        });
 
       setProducts(productsWithImage);
     } catch (error) {
