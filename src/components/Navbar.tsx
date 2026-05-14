@@ -1,55 +1,16 @@
 import { Link } from "react-router-dom";
-import { Heart, ShoppingCart, User, Menu } from "lucide-react";
+import { Heart, ShoppingCart, User, Menu, ShieldCheck, LayoutDashboard, FileText } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { useUserRole } from "@/hooks/useUserRole";
 
 const Navbar = () => {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [userType, setUserType] = useState<string | null>(null);
-
-  useEffect(() => {
-    // Verificar sessão inicial
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setIsLoggedIn(!!session);
-      if (session) {
-        // Buscar tipo de usuário
-        supabase
-          .from("profiles")
-          .select("tipo_usuario")
-          .eq("id", session.user.id)
-          .single()
-          .then(({ data }) => {
-            setUserType(data?.tipo_usuario || null);
-          });
-      }
-    });
-
-    // Ouvir mudanças de autenticação
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      setIsLoggedIn(!!session);
-      if (session) {
-        supabase
-          .from("profiles")
-          .select("tipo_usuario")
-          .eq("id", session.user.id)
-          .single()
-          .then(({ data }) => {
-            setUserType(data?.tipo_usuario || null);
-          });
-      } else {
-        setUserType(null);
-      }
-    });
-
-    return () => subscription.unsubscribe();
-  }, []);
+  const { role } = useUserRole();
+  const isLoggedIn = role !== null;
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
-    setIsLoggedIn(false);
-    setUserType(null);
     window.location.href = "/";
   };
 
@@ -63,17 +24,39 @@ const Navbar = () => {
       </Link>
       {isLoggedIn ? (
         <>
+          {role === "admin" && (
+            <Link to="/admin" className="text-sm hover:text-highlight transition-colors flex items-center gap-1">
+              <ShieldCheck className="h-4 w-4" />
+              Admin
+            </Link>
+          )}
+          {role === "vendedor" && (
+            <>
+              <Link to="/painel-doador" className="text-sm hover:text-highlight transition-colors flex items-center gap-1">
+                <LayoutDashboard className="h-4 w-4" />
+                Painel
+              </Link>
+              <Link to="/meus-documentos" className="text-sm hover:text-highlight transition-colors flex items-center gap-1">
+                <FileText className="h-4 w-4" />
+                Documentos
+              </Link>
+            </>
+          )}
+          {role === "comprador" && (
+            <>
+              <Link to="/favoritos" className="text-sm hover:text-highlight transition-colors flex items-center gap-1">
+                <Heart className="h-4 w-4" />
+                Salvos
+              </Link>
+              <Link to="/carrinho" className="text-sm hover:text-highlight transition-colors flex items-center gap-1">
+                <ShoppingCart className="h-4 w-4" />
+                Sacola Solidária
+              </Link>
+            </>
+          )}
           <Link to="/perfil" className="text-sm hover:text-highlight transition-colors flex items-center gap-1">
             <User className="h-4 w-4" />
             Perfil
-          </Link>
-          <Link to="/favoritos" className="text-sm hover:text-highlight transition-colors flex items-center gap-1">
-            <Heart className="h-4 w-4" />
-            Salvos
-          </Link>
-          <Link to="/carrinho" className="text-sm hover:text-highlight transition-colors flex items-center gap-1">
-            <ShoppingCart className="h-4 w-4" />
-            Sacola Solidária
           </Link>
           <button onClick={handleLogout} className="text-sm hover:text-highlight transition-colors">
             Sair
