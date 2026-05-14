@@ -17,6 +17,9 @@ import Carrinho from "./pages/Carrinho";
 import Perfil from "./pages/Perfil";
 import TermosDeUso from "./pages/TermosDeUso";
 import PoliticaPrivacidade from "./pages/PoliticaPrivacidade";
+import AdminDashboard from "./pages/AdminDashboard";
+import PainelDoador from "./pages/PainelDoador";
+import MeusDocumentos from "./pages/MeusDocumentos";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
