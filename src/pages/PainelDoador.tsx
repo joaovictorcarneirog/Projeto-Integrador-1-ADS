@@ -68,7 +68,7 @@ const PainelDoador = () => {
   const totalKg = produtos.reduce((acc, p) => acc + (p.quantidade || 0), 0);
   const refeicoes = totalKg * 3;
   const co2 = (totalKg * 2.5).toFixed(0);
-  const doacoesGratis = produtos.filter((p) => p.preco === "0.00" || p.preco === "0").length;
+  const doacoesGratis = produtos.filter((p) => Number(p.preco) === 0).length;
 
   return (
     <div className="min-h-screen flex flex-col bg-warm-grain">
