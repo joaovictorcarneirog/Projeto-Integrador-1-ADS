@@ -377,57 +377,66 @@ const Index = () => {
 
       {/* Main Content */}
       <main id="produtos" className="container mx-auto px-4 py-12 flex-1">
-        <div className="grid md:grid-cols-12 gap-6">
-          {/* Sidebar - Doador */}
-          {isVendedor && (
-            <div className="md:col-span-4">
-              <Card className="sticky top-20 border-2 border-foreground/10 rounded-2xl">
-                <CardContent className="p-6 space-y-3">
-                  <h3 className="text-xl font-bold mb-1 text-center">Painel do Doador</h3>
-                  <p className="text-xs text-center text-muted-foreground mb-4 font-handwritten text-base">
-                    cada item conta ✦
-                  </p>
-                  <Link to="/cadastrar-produto">
-                    <Button className="w-full rounded-full" size="lg">
-                      <Plus className="mr-2 h-5 w-5" />
-                      Doar / Ofertar item
-                    </Button>
-                  </Link>
-                  <Link to="/meus-produtos">
-                    <Button className="w-full rounded-full" variant="outline" size="lg">
-                      Meus itens ofertados
-                    </Button>
-                  </Link>
-                </CardContent>
-              </Card>
+        <div>
+          {/* Map Section */}
+          {products.some(p => p.latitude && p.longitude) && (
+            <div className="mb-10">
+              <h3 className="text-3xl mb-4 flex items-center gap-2">
+                <MapPin className="h-7 w-7 text-accent" />
+                Onde resgatar perto de você
+              </h3>
+              <div className="rounded-2xl overflow-hidden border-2 border-foreground/10">
+                <ProductMap
+                  products={products}
+                  className="h-[300px] md:h-[400px]"
+                />
+              </div>
             </div>
           )}
 
-          {/* Products Grid */}
-          <div className={isVendedor ? "md:col-span-8" : "md:col-span-12"}>
-            {/* Map Section */}
-            {products.some(p => p.latitude && p.longitude) && (
-              <div className="mb-10">
-                <h3 className="text-3xl mb-4 flex items-center gap-2">
-                  <MapPin className="h-7 w-7 text-accent" />
-                  Onde resgatar perto de você
-                </h3>
-                <div className="rounded-2xl overflow-hidden border-2 border-foreground/10">
-                  <ProductMap
-                    products={products}
-                    className="h-[300px] md:h-[400px]"
-                  />
-                </div>
-              </div>
-            )}
+          <div className="text-center mb-6">
+            <span className="font-handwritten text-2xl text-accent">o que você precisa hoje?</span>
+            <h3 className="text-3xl md:text-4xl">Catálogo por categoria</h3>
+          </div>
 
-            <div className="text-center mb-8">
-              <span className="font-handwritten text-2xl text-accent">disponíveis agora</span>
-              <h3 className="text-3xl md:text-4xl">Resgate antes que vire desperdício</h3>
-            </div>
-            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-              {products.map((product) => {
-                const isDoacao = product.preco === "0.00" || product.preco === "0";
+          {/* Filtros por categoria */}
+          <div className="flex flex-wrap justify-center gap-2 mb-10">
+            <Button
+              variant={activeCat === "all" ? "default" : "outline"}
+              className="rounded-full"
+              onClick={() => setActiveCat("all")}
+            >
+              <Apple className="mr-2 h-4 w-4" /> Tudo
+            </Button>
+            <Button
+              variant={activeCat === "doacao" ? "default" : "outline"}
+              className="rounded-full"
+              onClick={() => setActiveCat("doacao")}
+            >
+              <HandHeart className="mr-2 h-4 w-4" /> Só doações grátis
+            </Button>
+            {categorias.map((c) => (
+              <Button
+                key={c.id}
+                variant={activeCat === c.id ? "default" : "outline"}
+                className="rounded-full"
+                onClick={() => setActiveCat(c.id)}
+              >
+                {c.nome}
+              </Button>
+            ))}
+          </div>
+
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {products
+              .filter((product) => {
+                const isDoacao = Number(product.preco) === 0;
+                if (activeCat === "all") return true;
+                if (activeCat === "doacao") return isDoacao;
+                return product.fk_tipo_produto_id === activeCat;
+              })
+              .map((product) => {
+                const isDoacao = Number(product.preco) === 0;
                 return (
                 <Card key={product.id} className="overflow-hidden hover:shadow-xl transition-all rounded-2xl border-2 border-foreground/5 group">
                   <div className="aspect-video relative overflow-hidden">
